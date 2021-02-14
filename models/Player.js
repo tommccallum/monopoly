@@ -46,6 +46,7 @@ class Player extends Object.Object
 
   addIncome(amount) {
     this.balance += amount
+    this.notify(new Event.Event(this, "announcement", {text: `Hooray! I received ${amount}! I now have ${this.balance} to spend.`}))
   }
 
   tax(amount) {
@@ -100,6 +101,17 @@ class Player extends Object.Object
       total += p.hotelCount
     }
     return total
+  }
+
+  payEveryone(amount)
+  {
+    this.notify(new Event.Event(this, "payAllPlayers", { amount: amount}))
+    this.notify(new Event.Event(this, "announcement", {text: `I had to pay ${amount} to everyone! Only got ${this.balance} left to spend.`}))
+  }
+
+  withdraw(amount)
+  {
+    this.balance -= amount
   }
 
   makeRepairs(houseCost, hotelCost)

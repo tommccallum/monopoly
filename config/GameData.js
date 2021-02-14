@@ -166,7 +166,7 @@ module.exports = {
         {
             text: "Your building and loan matures. Collect $150.",
             action: (player) => {
-                player.notify(new Event.Event(player, "bankPayment", { amount: 150 }))
+                player.notify(new Event.Event(player, "payDividend", { amount: 150 }))
             },
             usage: "immediate",
             canBeSold: false

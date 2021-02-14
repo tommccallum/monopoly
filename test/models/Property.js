@@ -269,5 +269,65 @@ describe('Property model', () => {
             assert.strictEqual(player.location, 4) 
             assert.strictEqual(newBalance - oldBalance, 200)
         });
+
+        it('check Chance Card 11, advance to Mayfair, do not pass go', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 11
+            const oldBalance = player.balance
+            player.location = 38
+            property.visit(player)
+            const newBalance = player.balance
+            assert.strictEqual(player.location, 38) 
+            assert.strictEqual(newBalance - oldBalance, 0)
+        });
+
+        it('check Chance Card 12, pay everyone $50', () => {
+            const monopoly = Mocks.MockSetup(null, 3)
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 12
+            const oldBalance = player.balance
+            const oldBalance1 = monopoly.players[1].balance
+            const oldBalance2 = monopoly.players[2].balance
+            player.location = 6
+            property.visit(player)
+            const newBalance = player.balance
+            const newBalance1 = monopoly.players[1].balance
+            const newBalance2 = monopoly.players[2].balance
+            assert.strictEqual(player.location, 6) 
+            assert.strictEqual(newBalance - oldBalance, -100)
+            assert.strictEqual(newBalance1 - oldBalance1, 50)
+            assert.strictEqual(newBalance2 - oldBalance2, 50)
+        });
+
+        it('check Chance Card 13, collect $150', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 13
+            const oldBalance = player.balance
+            const oldBanker = monopoly.banker.model.balance
+            player.location = 6
+            property.visit(player)
+            const newBalance = player.balance
+            const newBanker = monopoly.banker.model.balance
+            assert.strictEqual(player.location, 6) 
+            assert.strictEqual(newBalance - oldBalance, 150)
+            assert.strictEqual(newBanker - oldBanker, -150)
+        });
     });
 });
