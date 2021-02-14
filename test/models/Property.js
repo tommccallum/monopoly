@@ -31,7 +31,22 @@ describe('Property model', () => {
             const newBalance = player.balance
             assert.strictEqual(player.location, 0) // should be at Go
             assert.strictEqual(newBalance - oldBalance, 200)
+        });
 
+        it('check Chance Card 2, advance to Trafalgar Square', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 0
+            const oldBalance = player.balance
+            property.visit(player)
+            const newBalance = player.balance
+            assert.strictEqual(player.location, 0) // should be at Go
+            assert.strictEqual(newBalance - oldBalance, 200)
         });
     });
 });
