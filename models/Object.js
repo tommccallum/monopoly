@@ -31,7 +31,7 @@ class Object {
         const alreadySentList = []
         const eventFn = event.getExpectedHandlerName()
         for (let listener of this.listenerToEverything) {
-            if (alreadySentList.indexOf(listener) != -1) {
+            if (alreadySentList.indexOf(listener) == -1) {
                 if (eventFn in listener) {
                     listener[eventFn](event)
                     alreadySentList.push(listener)
@@ -43,7 +43,7 @@ class Object {
         }
         if (event.name in this.listeners) {
             for (let listener of this.listeners[event.name]) {
-                if (alreadySentList.indexOf(listener) != -1) {
+                if (alreadySentList.indexOf(listener) == -1) {
                     if (eventFn in listener) {
                         listener[eventFn](event)
                         alreadySentList.push(listener)

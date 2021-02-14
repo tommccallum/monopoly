@@ -1,4 +1,5 @@
 const Object = require("../models/Object")
+const Event = require("../models/Event")
 
 /**
  * The banker listens to all the players and carries out purchases and mortgages etc.
@@ -25,9 +26,9 @@ class BankerController extends Object.Object {
             this.banker.changeBalance(-amount)
         } catch( error ) {
             if ( this.banker.balance <= 0 ) {
-                this.notify({ name: "announcement", text: "Quantitative easing" })
+                this.notify(new Event.Event(this, "announcement", {text: "Quantitative easing" }))
                 this.banker.changeBalance(1000000)
-                this.notify({ name: "bankBalanceChange", old: oldBalance, new: this.banker.balance})
+                this.notify(new Event.Event(this, "bankBalanceChange", { old: oldBalance, new: this.banker.balance}))
             }
         }
         player.addIncome(amount)
@@ -36,7 +37,7 @@ class BankerController extends Object.Object {
     payIn(amount) {
         const oldBalance = this.banker.balance
         this.banker.balance += amount
-        this.notify({ name: "bankBalanceChange", old:oldBalance, new: this.banker.balance})
+        this.notify(new Event.Event(this, "bankBalanceChange", {old:oldBalance, new: this.banker.balance}))
     }
 
     /**
@@ -44,7 +45,7 @@ class BankerController extends Object.Object {
      * @param {Event} event 
      */
     onAny(event) {
-        if ( this.event.owner == this.banker ) {
+        if ( event.source == this.banker ) {
             this.notify(event)
         }
     }
@@ -55,31 +56,31 @@ class BankerController extends Object.Object {
 
     onPurchase(event) {
         console.log("Purchase event fired")
-        if ( event.square.owner == null ) {
-            if ( event.player.balance >= event.square.getPurchasePrice() ) {
-                this.payIn(event.square.getPurchasePrice())
-                event.player.balance -= event.square.getPurchasePrice()
-                event.player.properties.push(event.square)
-                this.notify({name: "announcement", text: `Purchase of '${event.square.name}' was successful`})
+        if ( event.data.square.owner == null ) {
+            if ( event.source.balance >= event.data.square.getPurchasePrice() ) {
+                this.payIn(event.data.square.getPurchasePrice())
+                event.source.balance -= event.data.square.getPurchasePrice()
+                event.source.properties.push(event.data.square)
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of '${event.data.square.name}' was successful`}))
                 return
             } else {
-                this.notify({name: "announcement", text: `Purchase of '${event.square.name}' was not successful, too expensive`})
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of '${event.data.square.name}' was not successful, too expensive`}))
                 return
             }
         }
-        this.notify({name: "announcement", text: `Purchase of '${event.square.name}' was not successful, property already owned`})
+        this.notify(new Event.Event(this, "announcement", {text: `Purchase of '${event.data.square.name}' was not successful, property already owned`}))
     }
 
     onSale(event) {
         console.log("Sell event fired")
-        if ( event.square.owner == event.player ) {
+        if ( event.data.square.owner == event.source ) {
             // TODO fix with proper rules and adjust for houses and hotels
             // simplified to sell at purchase price
-            event.player.addIncome(event.square.getPurchasePrice())
-            event.square.owner = null
-            this.banker.balance -= event.square.getPurchasePrice()
+            event.source.addIncome(event.data.square.getPurchasePrice())
+            event.data.square.owner = null
+            this.banker.balance -= event.data.square.getPurchasePrice()
         }
-        this.notify({name: "announcement", text: `Sale of '${event.square.name}' was not successful, you do not own the property`})
+        this.notify(new Event.Event(this, "announcement", {text: `Sale of '${event.data.square.name}' was not successful, you do not own the property`}))
     }
 }
 

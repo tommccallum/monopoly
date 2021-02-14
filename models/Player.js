@@ -1,9 +1,10 @@
 // Player uses inheritance to separate out Human and Bot.  Common functionality is
 // in the top level class.  We call a top level class that has useful functionality an ABSTRACT CLASS.
 
-const Move = require("./Move")
+const ActionCollection = require("./ActionCollection")
 const Object = require("./Object")
 const Commands = require("./Commands")
+const Event = require("./Event")
 
 const LOCATION_JAIL = 20
 
@@ -42,10 +43,10 @@ class Player extends Object.Object
 
   tax(amount) {
     if ( this.balance < amount ) {
-      this.notify({name:"bankrupt", data: this})
+      this.notify(new Event.Event(this, "bankrupt"))
     }
     this.balance -= amount
-    this.notify({ name:"announcement", text: `I had to pay ${amount} in tax! Only got ${this.balance} left to spend.`})
+    this.notify(new Event.Event(this, "announcement", {text: `I had to pay ${amount} in tax! Only got ${this.balance} left to spend.`}))
   }
 
   isInJail() {
@@ -57,7 +58,7 @@ class Player extends Object.Object
     this.inJail = true
     // TODO Fix this as we can test the square itself to know if its the jail one.
     this.location = LOCATION_JAIL
-    this.notify({ name:"announcement", text: `The ${this.token.name} has gone to jail!`})
+    this.notify(new Event.Event(this, "announcement", {text: `The ${this.token.name} has gone to jail!`}))
   }
 
   move(diceRoll) 
@@ -65,10 +66,10 @@ class Player extends Object.Object
     const oldLocation = this.location
     this.location = (this.location + diceRoll.sum - 1) % this.squareCount
     if ( oldLocation > this.location ) {
-      this.notify({ name:"passGo", text: "Player passed Go!", data: this})
+      this.notify(new Event.Event(this, "passGo", {text: "Player passed Go!", data: this}))
     }
     const square = this.game.squares[this.location]
-    this.notify({ name:"announcement", text: `Player landed on ${square.name}!`})
+    this.notify(new Event.Event(this, "announcement", {text: `Player landed on ${square.name}!`}))
     square.visit(this)
   }
 
@@ -82,7 +83,7 @@ class Player extends Object.Object
 
   performDoNothingThisGo() {
     console.log("pass")
-    this.availableMoves = new Move.Move(this)
+    this.availableMoves = new ActionCollection.ActionCollection(this)
     if ( this.isOnDouble ) {
       this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
     }
@@ -100,7 +101,7 @@ class Player extends Object.Object
       this.gotoJail()
     }
     if ( isDouble && this.doubleCounter < 3 ) {
-      this.notify({ name: "announcement", text: `${this.token.name} rolled a double` })
+      this.notify(new Event.Event(this, "announcement", {text: `${this.token.name} rolled a double` }))
       this.availableMoves = this.generateMoves()
       this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
       this.isOnDouble = true
@@ -115,8 +116,8 @@ class Player extends Object.Object
   {
     console.log("buy")
     const square = this.game.squares[this.location]
-    this.notify({ name: "purchase", text: `${this.token.name} attempts to buy the property`, player: this, square: square })
-    this.availableMoves = new Move.Move(this)
+    this.notify(new Event.Event(this, "purchase", {text: `${this.token.name} attempts to buy the property`, player: this, square: square }))
+    this.availableMoves = new ActionCollection.ActionCollection(this)
     if ( this.isOnDouble ) {
       this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
     }
@@ -126,8 +127,8 @@ class Player extends Object.Object
   {
     console.log("sell")
     const square = this.game.squares[this.location]
-    this.notify({ name: "sale", text: `${this.token.name} attempts to sell the property`, player: this, square: square })
-    this.availableMoves = new Move.Move(this)
+    this.notify(new Event.Event(this, "sale", {text: `${this.token.name} attempts to sell the property`, player: this, square: square }))
+    this.availableMoves = new ActionCollection.ActionCollection(this)
     if ( this.isOnDouble ) {
       this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
     }
@@ -135,7 +136,7 @@ class Player extends Object.Object
 
   generateMoves() 
   {
-    const moves = new Move.Move(this)
+    const moves = new ActionCollection.ActionCollection(this)
     
     if ( this.inJail ) {
       // player gets to use a get out of jail free card
@@ -158,10 +159,10 @@ class Player extends Object.Object
 
   startTurn() 
   {
-    this.notify({ name: "announcement", text: `\n\n${this.token.name} (player ${this.index}) is now the current player` })
-    this.notify({ name: "announcement", text: `Balance: ${this.balance}` })
-    this.notify({ name: "announcement", text: `Properties: ${this.properties.map((x) => { return x.name; }).join(",")}` })
-    this.availableMoves = new Move.Move(this)
+    this.notify(new Event.Event(this, "announcement", {text: `\n\n${this.token.name} (player ${this.index}) is now the current player` }))
+    this.notify(new Event.Event(this, "announcement", {text: `Balance: ${this.balance}` }))
+    this.notify(new Event.Event(this, "announcement", {text: `Properties: ${this.properties.map((x) => { return x.name; }).join(",")}` }))
+    this.availableMoves = new ActionCollection.ActionCollection(this)
     this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
   }
 

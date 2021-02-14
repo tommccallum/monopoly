@@ -53,12 +53,12 @@ class Logger extends Object.Object
 {
     onAnnouncement(event) 
     {
-        console.log(`\x1b[33m${event.text}\x1b[0m`)
+        console.log(`\x1b[33m${event.data.text}\x1b[0m`)
     }
 
     onBankBalanceChange(event)
     {
-        console.log(`\x1b[31mBanker's balance has changed from ${event.old} to ${event.new}\x1b[0m`)
+        console.log(`\x1b[31mBanker's balance has changed from ${event.data.old} to ${event.data.new}\x1b[0m`)
     }
 }
 

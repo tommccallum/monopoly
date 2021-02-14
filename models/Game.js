@@ -1,11 +1,9 @@
-const Banker = require("./Banker")
-const Move = require("./Move")
 const Player = require("./Player")
 const Object = require("./Object")
 const Token = require("./Token")
 const Dice = require("./Dice")
 const Property = require("./Property")
-const assert = require("assert")
+const Event = require("./Event")
 
 class Monopoly extends Object.Object {
   constructor(gameData, banker, realPlayerCount) {
@@ -84,7 +82,7 @@ class Monopoly extends Object.Object {
     let starter = 0
     for (let index in this.players) {
       const result = this.rollDice()
-      this.notify({ name: "announcement", text: `Player ${this.players[index].index} rolled a ${result.values[0]}` })
+      this.notify(new Event.Event(this, "announcement", {text: `Player ${this.players[index].index} rolled a ${result.values[0]}` }))
       if (maxSoFar < result.values[0]) {
         maxSoFar = result.values[0]
         starter = index
@@ -92,14 +90,14 @@ class Monopoly extends Object.Object {
     }
     this.currentPlayer = starter
     const player = this.players[this.currentPlayer]
-    this.notify({ name: "announcement", text: `Player ${player.index} won the highest roll and will start` })
+    this.notify(new Event.Event(this, "announcement", {text: `Player ${player.index} won the highest roll and will start` }))
   }
 
   _checkUserInput(userInput)
   {
     if ( !this.lastMovesGenerated.isEmpty() ) {
       if (userInput == null || userInput.trim().length == 0) {
-        this.notify({ name: "announcement", text: "Invalid action specified, please try again." })
+        this.notify(new Event.Event(this, "announcement", {text: "Invalid action specified, please try again." }))
         return false
       }
     }
@@ -121,7 +119,7 @@ class Monopoly extends Object.Object {
         try {
           this.lastMovesGenerated.findAndExecute(userInput)
         } catch( error ) {
-          this.notify({name:"announcement", text:error.message})
+          this.notify(new Event.Event(this, "announcement", { text:error.message}))
         }
       }
     } else {

@@ -69,5 +69,5 @@ class ActionCollection
 }
 
 module.exports = {
-    Move:ActionCollection
+    ActionCollection:ActionCollection
 }
