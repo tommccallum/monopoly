@@ -7,9 +7,19 @@ const random = require("random")
 
 class Dice
 {
-    constructor()
+    constructor(sides)
     {
-        this.sides = 6
+        
+        if ( typeof(sides) == "undefined" ) {
+            sides = 6
+        }
+        if ( typeof(sides) != "number" ) {
+            throw new Error("number of sides must be an integer")
+        }
+        if ( Math.floor(sides) != sides ) {
+            throw new Error("number of sides must be an integer, not a floating point")
+        }
+        this.sides = sides
     }
 
     roll()
