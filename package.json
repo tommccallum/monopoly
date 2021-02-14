@@ -1,6 +1,11 @@
 {
     "scripts": {
-        "test": "mocha --recursive",
+        "test": "nyc mocha --recursive",
         "console": "node platform/console/main.js"
+    },
+    "dependencies": {
+        "mocha": "^8.3.0",
+        "nyc": "^15.1.0",
+        "random": "^2.2.0"
     }
 }

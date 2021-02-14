@@ -19,6 +19,7 @@ npm run console
 ## Unit Testing
 
 * using the Mocha library setup as per the default (https://mochajs.org/)
+* using the nyc package to add coverage reporting to the test output
 
 ```
 npm test
