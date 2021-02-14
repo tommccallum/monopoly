@@ -83,6 +83,10 @@ class Player extends Object.Object
   moveTo(squareName)
   {
     const index = this.game.indexOf(squareName)
+    if ( this.location > index) {
+      // pass go
+      this.notify(new Event.Event(this, "passGo", {text: "Player passed Go!", data: this}))
+    }
     this.location = index
     const square = this.game.squares[this.location]
     this.notify(new Event.Event(this, "announcement", {text: `Player landed on ${square.name}!`}))

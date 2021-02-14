@@ -65,7 +65,7 @@ module.exports = {
             canBeSold: false
         },
         { 
-            text: "Advance to Trafalgar Square", 
+            text: "Advance to Trafalgar Square, if you pass GO, collet $200.", 
             action: (player) => { player.moveTo('Trafalgar Square') },
             usage: 'immediate',
             canBeSold: false

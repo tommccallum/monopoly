@@ -33,7 +33,7 @@ describe('Property model', () => {
             assert.strictEqual(newBalance - oldBalance, 200)
         });
 
-        it('check Chance Card 2, advance to Trafalgar Square', () => {
+        it('check Chance Card 2, advance to Trafalgar Square, do not pass go', () => {
             const monopoly = Mocks.MockSetup()
             const player = monopoly.players[0]
             const propertyData = {
@@ -41,12 +41,32 @@ describe('Property model', () => {
                 name: "Chance"
             }
             const property = new MockChance(propertyData)
-            property.cardIndex = 0
+            property.cardIndex = 1
             const oldBalance = player.balance
+            player.location = 1
             property.visit(player)
             const newBalance = player.balance
-            assert.strictEqual(player.location, 0) // should be at Go
+            assert.strictEqual(player.location, 23) // should be at Trafalgar Square
+            assert.strictEqual(newBalance - oldBalance, 0)
+        });
+
+        it('check Chance Card 2, advance to Trafalgar Square, do pass go', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 1
+            const oldBalance = player.balance
+            player.location = 24
+            property.visit(player)
+            const newBalance = player.balance
+            assert.strictEqual(player.location, 23) // should be at Trafalgar Square
             assert.strictEqual(newBalance - oldBalance, 200)
         });
+
+        
     });
 });

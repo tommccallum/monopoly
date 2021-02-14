@@ -196,10 +196,8 @@ class Go extends Square
     }
 
     onPassGo(event) {
-        if ( "data" in event ) {
-            const player = event.data
-            this.visit(player)
-        }
+        const player = event.source
+        this.visit(player)
     }
 }
 
