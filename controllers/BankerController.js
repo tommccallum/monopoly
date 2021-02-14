@@ -21,21 +21,32 @@ class BankerController extends Object.Object {
     }
 
     payOut(player, amount) {
-        const oldBalance = this.banker.balance
-        this.banker.balance -= amount
-        this.notify({ name: "bankBalanceChange", old:oldBalance, new: this.banker.balance})
-        player.addIncome(amount)
-        if ( this.banker.balance < 0 ) {
-            this.notify({ name: "announcement", text: "Quantitative easing" })
-            this.banker.balance = 1000000
-            this.notify({ name: "bankBalanceChange", old: oldBalance, new: this.banker.balance})
+        try {
+            this.banker.changeBalance(-amount)
+        } catch( error ) {
+            if ( this.banker.balance <= 0 ) {
+                this.notify({ name: "announcement", text: "Quantitative easing" })
+                this.banker.changeBalance(1000000)
+                this.notify({ name: "bankBalanceChange", old: oldBalance, new: this.banker.balance})
+            }
         }
+        player.addIncome(amount)
     }
 
     payIn(amount) {
         const oldBalance = this.banker.balance
         this.banker.balance += amount
         this.notify({ name: "bankBalanceChange", old:oldBalance, new: this.banker.balance})
+    }
+
+    /**
+     * Forward all events from our banker model on to our listeners
+     * @param {Event} event 
+     */
+    onAny(event) {
+        if ( this.event.owner == this.banker ) {
+            this.notify(event)
+        }
     }
 
     onBankrupt(event) {

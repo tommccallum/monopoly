@@ -1,6 +1,5 @@
 const Object = require("./Object")
-const GameData = require("../config/GameData")
-const Property = require("./Property")
+const Event = require("./Event")
 
 /**
  * The banker listens to all the players and carries out purchases and mortgages etc.
@@ -10,8 +9,9 @@ const Property = require("./Property")
  * The model should be a simple data structure in essence changed only by the controller.
  */
 
-class BankerModel {
+class BankerModel extends Object.Object  {
     constructor() {
+        super()
         this.balance = 1000000
         this.titleDeeds = []
         this.houseCount = 32
@@ -21,6 +21,17 @@ class BankerModel {
     addTitleDeed(property)
     {
         this.titleDeeds.push(property)
+        this.notify(new Event.Event(this, "newTitleDeed"))
+    }
+
+    changeBalance(amount) 
+    {
+        if ( this.balance + amount <= 0 ) {
+            throw new Error("banker is bankrupt - oops!")
+        }
+        this.notify(new Event.Event(this, "beforeBalanceChanged", { amount: amount}))
+        this.balance += amount;
+        this.notify(new Event.Event(this, "afterBalanceChanged", {amount: amount}))
     }
 }
 

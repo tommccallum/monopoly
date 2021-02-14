@@ -1,20 +1,18 @@
 // Design Pattern used: Observer
 // This is used so that an object can listen to anothers events.
 // This is normally implemented in one of two forms, listen to ALL events and listen to AN event.
-class Object
-{
+class Object {
     constructor() {
         this.listeners = {}
         this.listenerToEverything = []
     }
 
-    addListener(eventName, object) 
-    {
-        if ( typeof(object) == "undefined" ) {
+    addListener(eventName, object) {
+        if (typeof (object) == "undefined") {
             this.listenerToEverything.push(eventName)
             return
         }
-        if ( eventName in this.listeners) {
+        if (eventName in this.listeners) {
             this.listeners[eventName].push(object)
         } else {
             this.listeners[eventName] = []
@@ -29,21 +27,27 @@ class Object
      * contain a switch or if statements to sort the events.
      * @param {object} event 
      */
-    notify(event) 
-    {
-        const eventFn = "on"+event.name.charAt(0).toUpperCase(1) + event.name.slice(1)
-        for(let listener of this.listenerToEverything) {
-            if (eventFn in listener) {
-                listener[eventFn](event)
-            } else if ( "onAny" in listener ) {
-                listener.onAny(event)
-            }
-        }
-        if ( event.name in this.listeners ) {
-            const eventFn = "on"+event.name.charAt(0).toUpperCase(1) + event.name.slice(1)
-            for(let listener of this.listeners[event.name]) {
+    notify(event) {
+        const alreadySentList = []
+        const eventFn = event.getExpectedHandlerName()
+        for (let listener of this.listenerToEverything) {
+            if (alreadySentList.indexOf(listener) != -1) {
                 if (eventFn in listener) {
                     listener[eventFn](event)
+                    alreadySentList.push(listener)
+                } else if ("onAny" in listener) {
+                    listener.onAny(event)
+                    alreadySentList.push(listener)
+                }
+            }
+        }
+        if (event.name in this.listeners) {
+            for (let listener of this.listeners[event.name]) {
+                if (alreadySentList.indexOf(listener) != -1) {
+                    if (eventFn in listener) {
+                        listener[eventFn](event)
+                        alreadySentList.push(listener)
+                    }
                 }
             }
         }

@@ -16,7 +16,7 @@ class Monopoly extends Object.Object {
     this.currentPlayer = 0
     this.squares = []
     this.banker = banker
-    this.dice = [new Dice.SixSidedDice(), new Dice.SixSidedDice()]
+    this.dice = [new Dice.Dice(), new Dice.Dice()]
     this.gameData = gameData
     this.doubleCounter = 0
     this.lastMovesGenerated = null

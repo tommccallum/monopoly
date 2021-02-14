@@ -18,22 +18,7 @@ class Dice
     }
 }
 
-// We always return the same value so that we can test 
-// 3 consecutive doubles
-class SingleValueDice extends Dice
-{
-    constructor(...args) {
-        super(...args)
-        this.value = 3
-    }
-
-    roll() 
-    {
-        return this.value
-    }
-}
 
 module.exports = {
-    SixSidedDice: Dice,
-    SingleValueDice: SingleValueDice
+    Dice: Dice,
 }
