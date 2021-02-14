@@ -50,6 +50,8 @@ class Monopoly extends Object.Object {
       } else {
         this.players.push(new Player.Bot(ii + 1, new Token.Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount, this.squares.length, this))
       }
+      const player = this.players[this.players.length-1]
+      this.notify(new Event.Event(this, "announcement", { text: `Creating human ${player.index} with token ${player.token.name} and balance ${player.balance}`}))
     }
   }
 
@@ -62,6 +64,16 @@ class Monopoly extends Object.Object {
         this.banker.addTitleDeed(square)
       }
     }
+  }
+
+  indexOf(squareName) 
+  {
+    for(let index=0; index < this.squares.length; index++) {
+      if ( this.squares[index].name.toLowerCase() == squareName.toLowerCase() ) {
+        return index
+      }
+    }
+    throw new Error(`square name '${squareName}' was not found`)
   }
 
   rollDice() {

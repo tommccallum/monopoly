@@ -30,7 +30,14 @@ class Player extends Object.Object
   }
 
   addChance(card) {
-    this.chanceCards.push(card)
+    this.notify(new Event.Event(this, "announcement", { text: `Player picked up Chance card: ${card.text}`}))
+    if ( typeof(card.usage) == "function" ) {
+      if ( !card.action(this) ) {
+        this.chanceCards.push(card)
+      }
+    } else if ( card.usage == "immediate") {
+      card.action(this)
+    }
   }
 
   addCommunityChest(card) {
@@ -68,6 +75,15 @@ class Player extends Object.Object
     if ( oldLocation > this.location ) {
       this.notify(new Event.Event(this, "passGo", {text: "Player passed Go!", data: this}))
     }
+    const square = this.game.squares[this.location]
+    this.notify(new Event.Event(this, "announcement", {text: `Player landed on ${square.name}!`}))
+    square.visit(this)
+  }
+
+  moveTo(squareName)
+  {
+    const index = this.game.indexOf(squareName)
+    this.location = index
     const square = this.game.squares[this.location]
     this.notify(new Event.Event(this, "announcement", {text: `Player landed on ${square.name}!`}))
     square.visit(this)
@@ -178,7 +194,6 @@ class Human extends Player
   constructor(...args) 
   {
     super(...args)
-    console.log(`Creating human ${this.index} with token ${this.token.name} and balance ${this.balance}`)
   }
 }
 
@@ -188,7 +203,6 @@ class Bot extends Player
   {
     super(...args)
     this.isHuman = false
-    console.log(`Creating bot ${this.index} with token ${this.token.name} and balance ${this.balance}`)
   }
 }
 

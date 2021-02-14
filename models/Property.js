@@ -136,16 +136,28 @@ class Chance extends Square
 {
     constructor(propertyData) {
         super(propertyData)
+
         this.text = null
-        this.value = null
+        this.usage = null
+        this.canBeSold = false
+        this.action = null
+    }
+
+    createNewCard(chanceData)
+    {
+        const card = new Chance(chanceData)
+        card.text = chanceData.text
+        card.value = chanceData.value
+        card.action = chanceData.action
+        card.usage = chanceData.usage
+        card.canBeSold = card.canBeSold
+        return card
     }
 
     visit(player) {
         if ( data.chance.length == 0 ) return;
         const chanceData = data.chance[random.int(0, data.chance.length)]
-        const card = new Chance()
-        card.text = chanceData.text
-        card.value = chanceData.value
+        const card = this.createNewCard(chanceData)
         player.addChance(card)
     }
 }
@@ -286,5 +298,6 @@ function createProperty(propertyData) {
 }
 
 module.exports = {
-    create: createProperty
+    create: createProperty,
+    Chance: Chance
 }
