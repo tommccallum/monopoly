@@ -1,18 +1,24 @@
 const readline = require('readline') // builtin library (https://nodejs.org/api/readline.html)
 const Monopoly = require('../../models/Game.js')
 const Board = require("../../models/Board.js")
-const GameData = require("../../models/data")
+const GameData = require("../../config/GameData")
 const assert = require("assert")
 const Banker = require("../../models/Banker")
+const BankerController = require("../../controllers/BankerController")
+
+/**
+ * Views are the objects that actually display the information when 
+ * necessary.  These can have access to the model via the controller but do not change it.
+ */
 
 class BoardView
 {
     /**
      * Create new BoardView object
-     * @param {BoardModel} board 
+     * @param {BoardController} board 
      */
     constructor(board) {
-        this.boardModel = board;
+        this.boardController = board;
     }
 
     render() {
@@ -20,6 +26,9 @@ class BoardView
     }
 }
 
+/**
+ * This is really MV as there is no controller for the moves.
+ */
 class PromptView 
 {
     constructor(prompt) {
@@ -46,14 +55,26 @@ class Logger extends Object.Object
     {
         console.log(`\x1b[33m${event.text}\x1b[0m`)
     }
+
+    onBankBalanceChange(event)
+    {
+        console.log(`\x1b[31mBanker's balance has changed from ${event.old} to ${event.new}\x1b[0m`)
+    }
 }
 
 // REPL = READ-EVAL-PROMPT-LOOP and is the common term for a console based interactive application
 function replPrompt(rl)
 {
     const logger = new Logger()
-    const banker = new Banker.Banker()
+
+    const bankerModel = new Banker.Model()
+    const banker = new BankerController.Controller(bankerModel)
     banker.addListener(logger)
+    
+    // here we use the Dependency Injection design pattern to inject
+    // the banker into the Monopoly class.  This way we can 
+    // use a Mock banker in testing or change the banker functionality without the
+    // Monopoly caring.
     const monopoly = new Monopoly.Monopoly(GameData, banker, numPlayers)
     monopoly.addListener(logger)
     monopoly.setup()
@@ -90,8 +111,10 @@ function replPrompt(rl)
             } )
         } else {
             // generate random move for automated player
-            const key = move.getRandom()
-            infiniteReadLoop(key)     
+            const key = move.getRandom()  
+            rl.question("Hit any to continue...", res => {
+                infiniteReadLoop(key);
+            });
         }
     }
 

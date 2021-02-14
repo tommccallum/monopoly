@@ -1,5 +1,14 @@
+// OOP technique used in Single Inheritance
+// Visitor pattern used where the player visits the location to have something done to it.
+// We override the functions in the Square interface.
+// An interface is EITHER a defined item in the language, 
+//                 OR its a class with maybe data members and empty/error throwing methods.
+// When you inherit in some languages you should try and keep all the methods in all the parents and children so
+// that an item of the top level type is no different, in the set of methods, than the children.
+// In some languages you can bend this requirement.
+
 const Commands = require("./Commands")
-const data = require("./data")
+const data = require("../config/GameData")
 
 class Square
 {
@@ -90,6 +99,7 @@ class Mortgage extends Square
         if ( this.owner == player ) {
             choices.push({ key:"S", text:"Sell property", command: new Commands.Sell(player) })
         }
+        choices.push({ key:"P", text:"Pass", command: new Commands.Pass(player) })
         return choices
     }
 }
@@ -244,7 +254,12 @@ class Tax extends Square
     }
 }
 
-
+// Design Pattern: Factory Method
+/**
+ * Creates a property object.  Any property should be able to be used identically after
+ * this function has been called.
+ * @param {object} propertyData 
+ */
 function createProperty(propertyData) {
     let property = null
     const type = propertyData.group.toLowerCase()

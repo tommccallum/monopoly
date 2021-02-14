@@ -84,6 +84,7 @@ class Monopoly extends Object.Object {
     let starter = 0
     for (let index in this.players) {
       const result = this.rollDice()
+      this.notify({ name: "announcement", text: `Player ${this.players[index].index} rolled a ${result.values[0]}` })
       if (maxSoFar < result.values[0]) {
         maxSoFar = result.values[0]
         starter = index
@@ -118,7 +119,7 @@ class Monopoly extends Object.Object {
     {
       if ( !this.lastMovesGenerated.isEmpty() ) {
         try {
-          this.lastMovesGenerated.execute(userInput)
+          this.lastMovesGenerated.findAndExecute(userInput)
         } catch( error ) {
           this.notify({name:"announcement", text:error.message})
         }

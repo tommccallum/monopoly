@@ -1,3 +1,6 @@
+// Player uses inheritance to separate out Human and Bot.  Common functionality is
+// in the top level class.  We call a top level class that has useful functionality an ABSTRACT CLASS.
+
 const Move = require("./Move")
 const Object = require("./Object")
 const Commands = require("./Commands")
@@ -42,6 +45,7 @@ class Player extends Object.Object
       this.notify({name:"bankrupt", data: this})
     }
     this.balance -= amount
+    this.notify({ name:"announcement", text: `I had to pay ${amount} in tax! Only got ${this.balance} left to spend.`})
   }
 
   isInJail() {
@@ -51,6 +55,7 @@ class Player extends Object.Object
 
   gotoJail() {
     this.inJail = true
+    // TODO Fix this as we can test the square itself to know if its the jail one.
     this.location = LOCATION_JAIL
     this.notify({ name:"announcement", text: `The ${this.token.name} has gone to jail!`})
   }
@@ -58,9 +63,8 @@ class Player extends Object.Object
   move(diceRoll) 
   {
     const oldLocation = this.location
-    this.location = (this.location + diceRoll.sum) % this.squareCount
+    this.location = (this.location + diceRoll.sum - 1) % this.squareCount
     if ( oldLocation > this.location ) {
-      // we passed go
       this.notify({ name:"passGo", text: "Player passed Go!", data: this})
     }
     const square = this.game.squares[this.location]
@@ -70,10 +74,18 @@ class Player extends Object.Object
 
   hasCard(name) 
   {
-    for(let card of this.cards) {
+    for(let card of this.communityChest) {
       if ( card.name == name ) return true
     }
     return false
+  }
+
+  performDoNothingThisGo() {
+    console.log("pass")
+    this.availableMoves = new Move.Move(this)
+    if ( this.isOnDouble ) {
+      this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
+    }
   }
 
   performRollOfDiceAction() {

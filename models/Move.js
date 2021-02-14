@@ -1,22 +1,33 @@
 const random = require("random")
 
-class Move 
+class ActionCollection
 {
     constructor(player)
     {
-        this.human = player.isHuman
+        this.player = player
         this.moves= []
     }
 
+    // this function 'forwards' the call to the player object
     isHuman() {
-        return this.human
+        return this.player.isHuman
     }
 
-    add(key, prompt, command) {
-        const obj = { key: key, text: prompt, command:command }
+    /**
+     * Adds a single command to the collection
+     * @param {string} key 
+     * @param {string} text 
+     * @param {Commmand} command 
+     */
+    add(key, text, command) {
+        const obj = { key: key, text: text, command:command }
         this.moves.push(obj)
     }
 
+    /**
+     * Adds multiple options to the collection, assumes that each item consists of {key,text,command} key-value pairs
+     * @param {array} choices 
+     */
     addAll(choices) 
     {
         for( let choice of choices ) {
@@ -24,11 +35,18 @@ class Move
         }
     }
 
+    /**
+     * Test if collection is empty
+     */
     isEmpty() {
         return this.moves.length == 0
     }
 
-    execute(userInput) {
+    /**
+     * Check if a command is mapped to the key value and if so execute, otherwise throw an error.
+     * @param {string} userInput 
+     */
+    findAndExecute(userInput) {
         for( let move of this.moves) {
             if ( move.key.toLowerCase() == userInput.toLowerCase() ) {
                 if ( "command" in move ) {
@@ -40,6 +58,9 @@ class Move
         throw new Error(`invalid input, not command registered for '${userInput}'`)
     }
 
+    /**
+     * getRandom is used to select an action at random for the bots.
+     */
     getRandom() 
     {
         const r = random.int(0, this.moves.length-1)
@@ -48,5 +69,5 @@ class Move
 }
 
 module.exports = {
-    Move:Move
+    Move:ActionCollection
 }

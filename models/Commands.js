@@ -1,3 +1,8 @@
+// Design Pattern used is Command.
+// This is used so to separate out the command from the object that fires it.
+// You give any dependent state in the constructor and then
+// hand control to that when it "fires".  This way in a GUI for instance
+// you can have a menu or a popup or a shortcut all carry out the same command.
 class Command
 {
     constructor(receiver) {
@@ -5,6 +10,17 @@ class Command
     }
     execute() {
         throw new Error("execute called on interface")
+    }
+}
+
+class Pass extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute() {
+        this.receiver.performDoNothingThisGo()
     }
 }
 
@@ -44,5 +60,6 @@ class Sell extends Command
 module.exports = {
     Roll: Roll,
     Buy: Buy,
-    Sell: Sell
+    Sell: Sell,
+    Pass: Pass
 }
