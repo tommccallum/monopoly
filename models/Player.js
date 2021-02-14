@@ -18,7 +18,7 @@ class Player extends Object.Object
     this.balance = balance
     this.properties = []
     this.token = token
-    this.location = 0
+    this.location = -1 // we start off the board
     this.inJail = false
     this.chanceCards = []
     this.communityChest = []
@@ -32,7 +32,7 @@ class Player extends Object.Object
   addChance(card) {
     this.notify(new Event.Event(this, "announcement", { text: `Player picked up Chance card: ${card.text}`}))
     if ( typeof(card.usage) == "function" ) {
-      if ( !card.action(this) ) {
+      if ( !card.usage(this) ) {
         this.chanceCards.push(card)
       }
     } else if ( card.usage == "immediate") {
@@ -57,27 +57,56 @@ class Player extends Object.Object
   }
 
   isInJail() {
-    // TODO isInJail
-    return false;
+    // NOTE cannot just test location as
+    // you can be on the jail location without
+    // being in jail.
+    return this.inJail;
   }
 
-  gotoJail() {
-    this.inJail = true
-    // TODO Fix this as we can test the square itself to know if its the jail one.
-    this.location = LOCATION_JAIL
-    this.notify(new Event.Event(this, "announcement", {text: `The ${this.token.name} has gone to jail!`}))
+  freeFromJail() {
+    this.inJail = false
+    this.notify(newEvent.Event(this, "freeFromJail"))
   }
 
-  move(diceRoll) 
-  {
-    const oldLocation = this.location
-    this.location = (this.location + diceRoll.sum - 1) % this.squareCount
-    if ( oldLocation > this.location ) {
-      this.notify(new Event.Event(this, "passGo", {text: "Player passed Go!", data: this}))
+  useFreeFromJailCard() {
+    if ( this.isInJail() ) {
+      for( let index =0; index < this.chanceCards.length; ii++ ) {
+        if ( "isFreeFromJailCard" in this.chanceCards[ii] ) {
+          if ( this.chanceCards[ii].isFreeFromJailCard ) {
+            this.chanceCards.splice(index,1)
+            this.freeFromJail()
+            return true
+          }
+        }
+      }
     }
+    return false
+  }
+
+  visitSquare() {
     const square = this.game.squares[this.location]
     this.notify(new Event.Event(this, "announcement", {text: `Player landed on ${square.name}!`}))
     square.visit(this)
+  }
+
+  gotoJailWithoutPassingGo() {
+    const jailIndex = this.game.findNearest("jail", this.location)
+    this.location = jailIndex
+    this.inJail = true
+    this.notify(new Event.Event(this, "announcement", {text: `The ${this.token.name} has gone to jail!`}))
+
+    this.visitSquare()
+  }
+
+  // TODO check this works when we go backwards from e.g. 3 to N-3
+  move(amount) 
+  {
+    const oldLocation = this.location
+    this.location = (this.location + amount) % this.squareCount
+    if ( oldLocation > this.location && amount > 0) {
+      this.notify(new Event.Event(this, "passGo", {text: "Player passed Go!", data: this}))
+    }
+    this.visitSquare()
   }
 
   moveTo(squareName)
@@ -88,9 +117,18 @@ class Player extends Object.Object
       this.notify(new Event.Event(this, "passGo", {text: "Player passed Go!", data: this}))
     }
     this.location = index
-    const square = this.game.squares[this.location]
-    this.notify(new Event.Event(this, "announcement", {text: `Player landed on ${square.name}!`}))
-    square.visit(this)
+    this.visitSquare()
+  }
+
+  moveToNearest(squareGroup)
+  {
+    const index = this.game.findNearest(squareGroup, this.location+1)
+    if ( this.location > index ) {
+      // pass go
+      this.notify(new Event.Event(this, "passGo", {text: "Player passed Go!", data: this}))
+    }
+    this.location = index
+    this.visitSquare()
   }
 
   hasCard(name) 
@@ -112,7 +150,7 @@ class Player extends Object.Object
   performRollOfDiceAction() {
     const rolled = this.game.rollDice()
     console.log(`Player rolled a [${rolled.values.join(',')}] for a total of ${rolled.sum}`)
-    this.move(rolled)
+    this.move(rolled.sum)
     const isDouble = rolled.values[0] == rolled.values[1]
     if (isDouble) {
       this.doubleCounter++;

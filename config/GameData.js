@@ -1,5 +1,7 @@
 "use strict"
 
+const Event = require("../models/Event")
+
 module.exports = {
     playerCount: 3,
     startingMoneyAmount: 1500,
@@ -97,14 +99,13 @@ module.exports = {
         {
             text: "Get out of Jail Free",
             action: (player) => {
-                if (player.isInJail()) {
-                    player.freeFromJail()
-                }
+                player.useFreeFromJailCard()
             },
             usage: (player) => {
                 return player.isInJail()
             },
-            canBeSold: true
+            canBeSold: true,
+            isFreeFromJailCard: true
         },
         {
             text: "Go back 3 spaces",

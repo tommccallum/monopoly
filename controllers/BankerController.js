@@ -82,6 +82,10 @@ class BankerController extends Object.Object {
         }
         this.notify(new Event.Event(this, "announcement", {text: `Sale of '${event.data.square.name}' was not successful, you do not own the property`}))
     }
+
+    onPayDividend(event) {
+        this.payOut(event.source, event.data.amount)
+    }
 }
 
 module.exports = {

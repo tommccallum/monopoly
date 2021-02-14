@@ -37,9 +37,7 @@ class Monopoly extends Object.Object {
     for (let p of this.players) {
       p.addListener(this)
       p.addListener("passGo", this.squares[0])
-      p.addListener("purchase", this.banker)
-      p.addListener("sale", this.banker)
-      p.addListener("bankrupt", this.banker)
+      p.addListener(this.banker)
     }
   }
 
@@ -74,6 +72,26 @@ class Monopoly extends Object.Object {
       }
     }
     throw new Error(`square name '${squareName}' was not found`)
+  }
+
+  findNearest(squareGroup, start)
+  {
+    if ( typeof(start) == "undefined" ) {
+      throw new Error("start location is undefined")
+    }
+    for(let index=start; index < this.squares.length; index++) {
+      if ( this.squares[index].group.toLowerCase() == squareGroup.toLowerCase() ) {
+        return index
+      }
+    }
+    if ( start > 0 ) {
+      for( let index=0; index < start; index++) {
+        if ( this.squares[index].group.toLowerCase() == squareGroup.toLowerCase() ) {
+          return index
+        }
+      }
+    }
+    throw new Error(`square group '${squareGroup}' was not found`)
   }
 
   rollDice() {
