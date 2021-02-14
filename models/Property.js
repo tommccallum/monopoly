@@ -229,7 +229,7 @@ class Jail extends Square
     }
 }
 
-class Station extends Mortgage 
+class FourGroup extends Mortgage
 {
     constructor(propertyData) {
         super(propertyData)
@@ -237,20 +237,23 @@ class Station extends Mortgage
 
     calculateRent()
     {
+        // TODO did these not have different
+        // rents based on how many you owned?
         return this.rentEmpty
     }
-
 }
 
-class Utility extends Mortgage
+class Station extends FourGroup 
 {
     constructor(propertyData) {
         super(propertyData)
     }
+}
 
-    calculateRent()
-    {
-        return this.rentEmpty
+class Utility extends FourGroup
+{
+    constructor(propertyData) {
+        super(propertyData)
     }
 }
 
@@ -276,6 +279,7 @@ class Tax extends Square
     }
 
     visit(player) {
+        // TODO change to withdraw
         player.tax(this.purchasePrice)
         this.banker.payIn(this.purchasePrice)
     }
