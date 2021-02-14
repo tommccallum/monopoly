@@ -73,6 +73,15 @@ class Monopoly extends Object.Object {
     }
   }
 
+  onPayMe(event) {
+    for( let p of this.players ) {
+      if ( event.source != p ) {
+        p.withdraw(event.data.amount)
+        event.source.addIncome(event.data.amount)
+      }
+    }
+  }
+
   indexOf(squareName) 
   {
     for(let index=0; index < this.squares.length; index++) {

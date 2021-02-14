@@ -188,6 +188,142 @@ module.exports = {
         }
     ],
     communityCheck: [
-
+        {
+            text: "Advance to 'Go'. (Collect $200)",
+            action: (player) => { player.moveTo('GO'); },
+            usage: 'immediate',
+            canBeSold: false
+        },
+        {
+            text: "Bank error in your favour. Collect $200.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 200 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Pay doctors fee $50",
+            action: (player) => {
+                player.withdraw(50)
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "From sale of stock. Collect $50.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 50 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Get out of Jail Free",
+            action: (player) => {
+                player.useFreeFromJailCard()
+            },
+            usage: (player) => {
+                return player.isInJail()
+            },
+            canBeSold: true,
+            isFreeFromJailCard: true
+        },
+        {
+            text: "Go to Jail. Go directly to Jail. Do not pass GO, do not collect £200.",
+            action: (player) => {
+                player.gotoJailWithoutPassingGo()
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Grand Opera Night. Collect $50 from each player.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payMe", { amount: 50 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Holiday Fund matures. Collect $100.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Income Tax refund. Collect $20.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 20 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "It's your birthday. Collect $10 from each player.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payMe", { amount: 10 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Life insurance matures. Collect $100.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Hospital fees. Pay $50",
+            action: (player) => {
+                player.withdraw(50)
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "School fees. Pay $50",
+            action: (player) => {
+                player.withdraw(50)
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "Receive $25 consultancy fee.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 25 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "You are assessed for street repairs.  For each house pay $40. For each hotel pay $115.",
+            action: (player) => {
+                player.makeRepairs(40,115)
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "You have won second prize in a beauty contest. Collect $10.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 10 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "You have inherited some money. Collect $100.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        }
     ]
 }

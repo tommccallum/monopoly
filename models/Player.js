@@ -49,6 +49,7 @@ class Player extends Object.Object
     this.notify(new Event.Event(this, "announcement", {text: `Hooray! I received ${amount}! I now have ${this.balance} to spend.`}))
   }
 
+  // TODO merge tax and withdraw functions into single function
   tax(amount) {
     if ( this.balance < amount ) {
       this.notify(new Event.Event(this, "bankrupt"))
@@ -56,6 +57,15 @@ class Player extends Object.Object
     this.balance -= amount
     this.notify(new Event.Event(this, "payBank", { amount: amount }))
     this.notify(new Event.Event(this, "announcement", {text: `I had to pay ${amount} in tax! Only got ${this.balance} left to spend.`}))
+  }
+
+  withdraw(amount)
+  {
+    if ( this.balance < amount ) {
+      this.notify(new Event.Event(this, "bankrupt"))
+    }
+    this.balance -= amount
+    this.notify(new Event.Event(this, "payBank", { amount: amount }))
   }
 
   isInJail() {
@@ -109,10 +119,7 @@ class Player extends Object.Object
     this.notify(new Event.Event(this, "announcement", {text: `I had to pay ${amount} to everyone! Only got ${this.balance} left to spend.`}))
   }
 
-  withdraw(amount)
-  {
-    this.balance -= amount
-  }
+  
 
   makeRepairs(houseCost, hotelCost)
   {
