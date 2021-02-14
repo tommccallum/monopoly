@@ -132,7 +132,7 @@ class Property extends Mortgage
    
 }
 
-class Chance extends Square
+class Card extends Square
 {
     constructor(propertyData) {
         super(propertyData)
@@ -143,40 +143,57 @@ class Chance extends Square
         this.action = null
     }
 
-    createNewCard(chanceData)
+    fillCard(card, data)
     {
-        const card = new Chance(chanceData)
-        card.text = chanceData.text
-        card.value = chanceData.value
-        card.action = chanceData.action
-        card.usage = chanceData.usage
-        card.canBeSold = card.canBeSold
-        return card
+        card.text = data.text
+        card.value = data.value
+        card.action = data.action
+        card.usage = data.usage
+        card.canBeSold = data.canBeSold
     }
 
+    getData() { return {} }
+
     visit(player) {
-        if ( data.chance.length == 0 ) return;
-        const chanceData = data.chance[random.int(0, data.chance.length)]
-        const card = this.createNewCard(chanceData)
+        const data = this.getData()
+        const card = this.createNewCard(data)
         player.addChance(card)
     }
 }
 
-class CommunityChest extends Square
+class Chance extends Card
 {
     constructor(propertyData) {
         super(propertyData)
-        this.text = null
-        this.value = null
     }
 
-    visit(player) {
-        if ( data.communityChest.length == 0 ) return;
-        const communityChestData = data.communityChest[random.int(0, data.communityChest.length)]
-        const card = new Chance()
-        card.text = communityChestData.text
-        card.value = communityChestData.value
-        player.addChance(card)
+    createNewCard(data)
+    {
+        const card = new Chance(data)
+        this.fillCard(card, data)
+        return card
+    }
+
+    getData() { 
+        return data.chance[random.int(0, data.chance.length)]
+    }
+}
+
+class CommunityChest extends Card
+{
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    createNewCard(data)
+    {
+        const card = new CommunityChest(data)
+        this.fillCard(card, data)
+        return card
+    }
+
+    getData() { 
+        return data.communityChest[random.int(0, data.communityChest.length)]
     }
 }
 
