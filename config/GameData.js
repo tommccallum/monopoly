@@ -10,7 +10,7 @@ module.exports = {
         { group: "Brown", name: "Old Kent Road", purchase_value: 60, house_price: 30 },
         { group: "Brown", name: "Whitechapel Road", purchase_value: 60, house_price: 30 },
         { group: "incometax", name: "Income Tax", puchase_value: -200 },
-        { group: "station", name: "Kings Cross Station", puchase_value: 200 },
+        { group: "station", name: "King's Cross Station", puchase_value: 200 },
         { group: "property", name: "The Angel Islington", purchase_value: 100 },
         { group: "chance", name: "Chance" },
         { group: "property", name: "Euston Road", purchase_value: 100 },

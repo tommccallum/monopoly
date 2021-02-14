@@ -53,6 +53,7 @@ class Player extends Object.Object
       this.notify(new Event.Event(this, "bankrupt"))
     }
     this.balance -= amount
+    this.notify(new Event.Event(this, "payBank", { amount: amount }))
     this.notify(new Event.Event(this, "announcement", {text: `I had to pay ${amount} in tax! Only got ${this.balance} left to spend.`}))
   }
 
@@ -81,6 +82,35 @@ class Player extends Object.Object
       }
     }
     return false
+  }
+
+  getHouseCount() 
+  {
+    let total = 0
+    for( let p of this.properties ) {
+      total += p.houseCount
+    }
+    return total
+  }
+
+  getHotelCount() 
+  {
+    let total = 0
+    for( let p of this.properties ) {
+      total += p.hotelCount
+    }
+    return total
+  }
+
+  makeRepairs(houseCost, hotelCost)
+  {
+    const amount = houseCost * this.getHouseCount() + hotelCost * this.getHotelCount()
+    if ( this.balance < amount ) {
+      this.notify(new Event.Event(this, "bankrupt"))
+    }
+    this.balance -= amount
+    this.notify(new Event.Event(this, "payBank", { amount: amount }))
+    this.notify(new Event.Event(this, "announcement", {text: `I had to pay ${amount} in repairs! Only got ${this.balance} left to spend.`}))
   }
 
   visitSquare() {

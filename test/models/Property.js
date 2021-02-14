@@ -189,7 +189,7 @@ describe('Property model', () => {
             assert.strictEqual(player.chanceCards.length, 0)
         });
 
-        it('check Chance Card 6, go to jail without passing go.', () => {
+        it('check Chance Card 7, go to jail without passing go.', () => {
             const monopoly = Mocks.MockSetup()
             const player = monopoly.players[0]
             const propertyData = {
@@ -207,6 +207,67 @@ describe('Property model', () => {
             assert.strictEqual(player.chanceCards.length, 0)
         });
 
-        
+        it('check Chance Card 8, Make general repairs to your properties..', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 8
+            const oldBalance = player.balance
+            const oldBanker = monopoly.banker.model.balance
+            player.location = 6
+            // overwrite original function
+            player.getHouseCount = () => 3
+            player.getHotelCount = () => 4
+            // expected repairs is 475
+            property.visit(player)
+            const newBalance = player.balance
+            const newBanker = monopoly.banker.model.balance
+            assert.strictEqual(player.location, 6) 
+            assert.strictEqual(newBalance - oldBalance, -475)
+            assert.strictEqual(player.chanceCards.length, 0)
+            assert.strictEqual(newBanker - oldBanker, 475)
+        });
+
+        it('check Chance Card 9, pay poor tax of $15.', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 9
+            const oldBalance = player.balance
+            const oldBanker = monopoly.banker.model.balance
+            player.location = 6
+            property.visit(player)
+            const newBalance = player.balance
+            const newBanker = monopoly.banker.model.balance
+            assert.strictEqual(player.location, 6) 
+            assert.strictEqual(newBalance - oldBalance, -15)
+            assert.strictEqual(player.chanceCards.length, 0)
+            assert.strictEqual(newBanker - oldBanker, 15)
+        });
+
+        it('check Chance Card 10, advance to King\'s Cross Station, do pass go', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 10
+            const oldBalance = player.balance
+            player.location = 24
+            property.visit(player)
+            const newBalance = player.balance
+            assert.strictEqual(player.location, 4) 
+            assert.strictEqual(newBalance - oldBalance, 200)
+        });
     });
 });

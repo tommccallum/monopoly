@@ -13,31 +13,31 @@ const Event = require("../models/Event")
 class BankerController extends Object.Object {
     constructor(banker) {
         super()
-        this.banker = banker
+        this.model = banker
     }
 
     addTitleDeed(property)
     {
-        this.banker.titleDeeds.push(property)
+        this.model.titleDeeds.push(property)
     }
 
     payOut(player, amount) {
         try {
-            this.banker.changeBalance(-amount)
+            this.model.changeBalance(-amount)
         } catch( error ) {
-            if ( this.banker.balance <= 0 ) {
+            if ( this.model.balance <= 0 ) {
                 this.notify(new Event.Event(this, "announcement", {text: "Quantitative easing" }))
-                this.banker.changeBalance(1000000)
-                this.notify(new Event.Event(this, "bankBalanceChange", { old: oldBalance, new: this.banker.balance}))
+                this.model.changeBalance(1000000)
+                this.notify(new Event.Event(this, "bankBalanceChange", { old: oldBalance, new: this.model.balance}))
             }
         }
         player.addIncome(amount)
     }
 
     payIn(amount) {
-        const oldBalance = this.banker.balance
-        this.banker.balance += amount
-        this.notify(new Event.Event(this, "bankBalanceChange", {old:oldBalance, new: this.banker.balance}))
+        const oldBalance = this.model.balance
+        this.model.balance += amount
+        this.notify(new Event.Event(this, "bankBalanceChange", {old:oldBalance, new: this.model.balance}))
     }
 
     /**
@@ -45,9 +45,13 @@ class BankerController extends Object.Object {
      * @param {Event} event 
      */
     onAny(event) {
-        if ( event.source == this.banker ) {
+        if ( event.source == this.model ) {
             this.notify(event)
         }
+    }
+
+    onPayBank(event) {
+        this.payIn(event.data.amount)
     }
 
     onBankrupt(event) {
@@ -78,7 +82,7 @@ class BankerController extends Object.Object {
             // simplified to sell at purchase price
             event.source.addIncome(event.data.square.getPurchasePrice())
             event.data.square.owner = null
-            this.banker.balance -= event.data.square.getPurchasePrice()
+            this.model.balance -= event.data.square.getPurchasePrice()
         }
         this.notify(new Event.Event(this, "announcement", {text: `Sale of '${event.data.square.name}' was not successful, you do not own the property`}))
     }
