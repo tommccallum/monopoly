@@ -15,7 +15,7 @@ class Dice
 
 // We always return the same value so that we can test 
 // 3 consecutive doubles
-class SingleValueDice 
+class SingleValueDice extends Dice
 {
     constructor(...args) {
         super(...args)

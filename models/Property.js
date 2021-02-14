@@ -1,23 +1,275 @@
-class Property
+const Commands = require("./Commands")
+const data = require("./data")
+
+class Square
 {
-    constructor()
+    constructor(propertyData)
     {
-        self.name = ""
-        self.houses = []
-        self.hotels = []
-        self.purchasePrice = []
-        self.rentPerHotel = 0
-        self.rentPerHouse = 0
-        self.rentEmpty = 0
+        this.group = propertyData.group
+        this.name = propertyData.name
+        this.banker = null
+    }
+
+    setBanker(banker) {
+        this.banker = banker
     }
 
     getRentAmount()
     {
-
+        throw new Error("Unsupported method")
     }
 
     getPurchasePrice()
     {
-
+        throw new Error("Unsupported method")
     }
+
+    getText() {
+        throw new Error("Unsupported method")
+    }
+
+    getValue() {
+        throw new Error("Unsupported method")
+    }
+
+    visit(player)  {
+        throw new Error("Unsupported method")
+    }
+
+    isSellable() 
+    {
+        return false
+    }
+
+    getOptions(player)
+    {
+        return []
+    }
+    
+}
+
+class Mortgage extends Square
+{
+    constructor(propertyData) {
+        super(propertyData)
+        this.owner = null
+        this.isMortgaged = false
+        this.purchasePrice = propertyData.purchase_value
+    }
+
+    getPurchasePrice()
+    {
+        return this.purchasePrice
+    }
+
+    isSellable() 
+    {
+        return true
+    }
+
+    calculateRent() {
+        return 0
+    }
+
+    visit(player) 
+    {
+        if ( this.isMortgaged ) return
+        if ( this.owner == player ) return;
+        if ( !this.owner ) {
+            return;
+        }
+        player.pay(this.owner, this.calculateRent())
+    }
+
+    getOptions(player)
+    {
+        let choices = []
+        if ( this.owner == null && player.balance >= this.purchasePrice ) {
+            choices.push({ key:"B", text:"Buy property", command: new Commands.Buy(player) })
+        }
+        if ( this.owner == player ) {
+            choices.push({ key:"S", text:"Sell property", command: new Commands.Sell(player) })
+        }
+        return choices
+    }
+}
+
+class Property extends Mortgage
+{
+    constructor(propertyData) {
+        super(propertyData)
+        this.houses = []
+        this.hotels = []
+        this.rentPerHotel = propertyData.rentPerHotel
+        this.rentPerHouse = propertyData.rentPerHouse
+        this.rentEmpty = propertyData.rentEmpty
+        this.owner = null
+    }
+
+    isSellable() 
+    {
+        return true
+    }
+    
+
+    calculateRent() {
+        if ( this.houses.length == 0 && this.hotels.length == 0 ) {
+            return this.rentEmpty
+        }
+        return this.houses.length * this.rentPerHouse + this.hotels.length * this.rentPerHotel
+    }
+
+   
+}
+
+class Chance extends Square
+{
+    constructor(propertyData) {
+        super(propertyData)
+        this.text = null
+        this.value = null
+    }
+
+    visit(player) {
+        if ( data.chance.length == 0 ) return;
+        const chanceData = data.chance[random.int(0, data.chance.length)]
+        const card = new Chance()
+        card.text = chanceData.text
+        card.value = chanceData.value
+        player.addChance(card)
+    }
+}
+
+class CommunityChest extends Square
+{
+    constructor(propertyData) {
+        super(propertyData)
+        this.text = null
+        this.value = null
+    }
+
+    visit(player) {
+        if ( data.communityChest.length == 0 ) return;
+        const communityChestData = data.communityChest[random.int(0, data.communityChest.length)]
+        const card = new Chance()
+        card.text = communityChestData.text
+        card.value = communityChestData.value
+        player.addChance(card)
+    }
+}
+
+class Go extends Square
+{
+    constructor(propertyData) {
+        super(propertyData)
+        this.purchasePrice = propertyData.purchase_value
+    }
+
+    getPurchasePrice() {
+        return this.purchasePrice
+    }
+
+    visit(player) {
+        this.banker.payOut(player, this.purchasePrice)
+    }
+
+    onPassGo(event) {
+        if ( "data" in event ) {
+            const player = event.data
+            this.visit(player)
+        }
+    }
+}
+
+class Jail extends Square
+{
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    visit(player) {
+        // nothing happens here I don't think
+    }
+}
+
+class Station extends Mortgage 
+{
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    calculateRent()
+    {
+        return this.rentEmpty
+    }
+
+}
+
+class Utility extends Mortgage
+{
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    calculateRent()
+    {
+        return this.rentEmpty
+    }
+}
+
+class FreeParking extends Square
+{
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    visit(player) {
+        // nothing happens here according to the rules
+        // but some people play that any money from tax
+        // can go in here and if you land on it then
+        // you get all that lovely money...
+    }
+}
+
+class Tax extends Square
+{
+    constructor(propertyData) {
+        super(propertyData)
+        this.purchasePrice = propertyData.purchase_value
+    }
+
+    visit(player) {
+        player.tax(this.purchasePrice)
+        this.banker.payIn(this.purchasePrice)
+    }
+}
+
+
+function createProperty(propertyData) {
+    let property = null
+    const type = propertyData.group.toLowerCase()
+    if ( type == "chance" ) {
+        property = new Chance(propertyData)
+    } else if ( type == "go" ) {
+        property = new Go(propertyData)
+    } else if ( type == "communitychest" ) {
+        property = new CommunityChest(propertyData)
+    } else if ( type == "jail" ) {
+        property = new Jail(propertyData)
+    } else if ( type == "station") {
+        property = new Station(propertyData)
+    } else if ( type == "utility" ) {
+        property = new Utility(propertyData)
+    } else if ( type == "freeparking" ) {
+        property = new FreeParking(propertyData)
+    } else if ( type == "tax" ) {
+        property = new Tax(propertyData)
+    } else {
+        property = new Property(propertyData)
+    }
+    return property
+}
+
+module.exports = {
+    create: createProperty
 }

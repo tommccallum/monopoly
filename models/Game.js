@@ -1,39 +1,77 @@
 const Banker = require("./Banker")
 const Move = require("./Move")
 const Player = require("./Player")
-const data = require("./data")
+const Object = require("./Object")
 const Token = require("./Token")
 const Dice = require("./Dice")
+const Property = require("./Property")
+const assert = require("assert")
 
-class Monopoly
-{
-  constructor(realPlayerCount) 
-  {
-    this.startingMoney = 1500 // as per the game but we could change this if we wanted
-    this.playerCount = 4
+class Monopoly extends Object.Object {
+  constructor(gameData, banker, realPlayerCount) {
+    super()
+    this.playerCount = gameData.playerCount
     this.realPlayerCount = realPlayerCount
     this.players = []
     this.currentPlayer = 0
-    this.availableProperties = []
-    this.banker = new Banker.Banker()
+    this.squares = []
+    this.banker = banker
     this.dice = [new Dice.SixSidedDice(), new Dice.SixSidedDice()]
-    
-    for(let ii=0; ii < this.playerCount; ii++ ) {
-      if ( ii < this.realPlayerCount ) {
-        this.players.push( new Player.Human(ii+1, new Token.Token(data.tokens[ii]), this.startingMoney))
+    this.gameData = gameData
+    this.doubleCounter = 0
+    this.lastMovesGenerated = null
+  }
+
+  setup() {
+    this.createBoardSquares()
+    this.createPlayers()
+    this.addPlayerListeners()
+    this.whoStarts()
+  }
+
+  onAny(event) {
+    this.notify(event)
+  }
+
+  addPlayerListeners() {
+    // make the Go space a listener on all the players 
+    // so we can detect when they have gone round the board
+    for (let p of this.players) {
+      p.addListener(this)
+      p.addListener("passGo", this.squares[0])
+      p.addListener("purchase", this.banker)
+      p.addListener("sale", this.banker)
+      p.addListener("bankrupt", this.banker)
+    }
+  }
+
+  createPlayers() {
+    for (let ii = 0; ii < this.playerCount; ii++) {
+      if (ii < this.realPlayerCount) {
+        this.players.push(new Player.Human(ii + 1, new Token.Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount, this.squares.length, this ))
       } else {
-        this.players.push( new Player.Bot(ii+1, new Token.Token(data.tokens[ii]), this.startingMoney))
+        this.players.push(new Player.Bot(ii + 1, new Token.Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount, this.squares.length, this))
       }
     }
   }
 
-  rollDice() 
-  {
+  createBoardSquares() {
+    for (let squareData of this.gameData.squares) {
+      const square = Property.create(squareData)
+      square.setBanker(this.banker)
+      this.squares.push(square)
+      if (square.isSellable()) {
+        this.banker.addTitleDeed(square)
+      }
+    }
+  }
+
+  rollDice() {
     let total = {
       sum: 0,
       values: []
     }
-    for( let die of this.dice ) {
+    for (let die of this.dice) {
       const val = die.roll()
       total.values.push(val)
       total.sum += val
@@ -41,36 +79,70 @@ class Monopoly
     return total
   }
 
-  takeTurn()
-  {
-    const player = this.players[this.currentPlayer]
-
-    if ( player.isInJail() ) {
-      
-    }
-
-    let consecutiveDoubles = 0
-    let isDouble = false
-    do {
-      const rolled = this.rollDice()
-      console.log("Player rolled "+rolled.sum)
-      console.log(rolled.values)
-      player.move(rolled)
-      isDouble = rolled.values[0] == rolled.values[1]
-      if ( isDouble ) {
-        consecutiveDoubles++ 
+  whoStarts() {
+    let maxSoFar = 0
+    let starter = 0
+    for (let index in this.players) {
+      const result = this.rollDice()
+      if (maxSoFar < result.values[0]) {
+        maxSoFar = result.values[0]
+        starter = index
       }
-    } while ( consecutiveDoubles < 3 && isDouble )
-
-    if ( consecutiveDoubles > 2 ) {
-      player.gotoJail()
-    } else {
-      // player.selectAction()
-      // player.performAction()
     }
+    this.currentPlayer = starter
+    const player = this.players[this.currentPlayer]
+    this.notify({ name: "announcement", text: `Player ${player.index} won the highest roll and will start` })
+  }
+
+  _checkUserInput(userInput)
+  {
+    if ( !this.lastMovesGenerated.isEmpty() ) {
+      if (userInput == null || userInput.trim().length == 0) {
+        this.notify({ name: "announcement", text: "Invalid action specified, please try again." })
+        return false
+      }
+    }
+    return true
+  }
+
+  takeTurn(userInput) {
+    if (this.lastMovesGenerated == null) {
+      // this is the first time we have been called so we
+      // load the first players options
+      this.players[this.currentPlayer].startTurn()
+      this.lastMovesGenerated = this.players[this.currentPlayer].getAvailableMoves()
+      return this.lastMovesGenerated
+    }
+
+    if ( this._checkUserInput(userInput))
+    {
+      if ( !this.lastMovesGenerated.isEmpty() ) {
+        try {
+          this.lastMovesGenerated.execute(userInput)
+        } catch( error ) {
+          this.notify({name:"announcement", text:error.message})
+        }
+      }
+    } else {
+      // we are here as the user just hit return
+      this.next()
+      return this.lastMovesGenerated
+    }
+
+
+    let player = this.players[this.currentPlayer]
+    this.lastMovesGenerated = player.getAvailableMoves()
+    if ( this.lastMovesGenerated.isEmpty() ) {
+      this.next()
+    }
+    return this.lastMovesGenerated
+  }
+
+  next() {
     this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
-    console.log(this.currentPlayer)
-    return this.players[this.currentPlayer].generateMoves()
+    const nextPlayer = this.players[this.currentPlayer]
+    nextPlayer.startTurn()
+    this.lastMovesGenerated = nextPlayer.getAvailableMoves()
   }
 }
 
