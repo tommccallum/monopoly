@@ -102,7 +102,7 @@ describe('Property model', () => {
         });
 
 
-        it('check Chance Card 3, Advance to nearest station. Not passing go.', () => {
+        it('check Chance Card 14, Advance to nearest station. Not passing go.', () => {
             const monopoly = Mocks.MockSetup()
             const player = monopoly.players[0]
             const propertyData = {
@@ -119,7 +119,7 @@ describe('Property model', () => {
             assert.strictEqual(newBalance - oldBalance, 0)
         });
 
-        it('check Chance Card 3, Advance to nearest station. Passing go.', () => {
+        it('check Chance Card 14, Advance to nearest station. Passing go.', () => {
             const monopoly = Mocks.MockSetup()
             const player = monopoly.players[0]
             const propertyData = {

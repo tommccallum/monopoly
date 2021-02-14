@@ -67,11 +67,12 @@ module.exports = {
             canBeSold: false
         },
         { 
-            text: "Advance to Trafalgar Square, if you pass GO, collet $200.", 
+            text: "Advance to Trafalgar Square, if you pass GO, collect $200.", 
             action: (player) => { player.moveTo('Trafalgar Square') },
             usage: 'immediate',
             canBeSold: false
         },
+        
         {
             text: "Advance to nearest utility.  If unowned, you may buy it from the bank.  If owned, throw dice and pay owner a total 10 times the amount thrown.",
             action: (player) => {
@@ -169,6 +170,20 @@ module.exports = {
                 player.notify(new Event.Event(player, "payDividend", { amount: 150 }))
             },
             usage: "immediate",
+            canBeSold: false
+        },
+        {
+            text: "You have won a competition. Collect $100.",
+            action: (player) => {
+                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+            },
+            usage: "immediate",
+            canBeSold: false
+        },
+        { 
+            text: "Advance to Pall Mall, if you pass GO, collect $200.", 
+            action: (player) => { player.moveTo('Pall Mall') },
+            usage: 'immediate',
             canBeSold: false
         }
     ],
