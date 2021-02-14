@@ -10,26 +10,23 @@
 const Commands = require("./Commands")
 const data = require("../config/GameData")
 
-class Square
-{
-    constructor(propertyData)
-    {
+class Square {
+    constructor(propertyData) {
         this.group = propertyData.group
         this.name = propertyData.name
         this.banker = null
     }
 
+    
     setBanker(banker) {
         this.banker = banker
     }
 
-    getRentAmount()
-    {
+    getRentAmount() {
         throw new Error("Unsupported method")
     }
 
-    getPurchasePrice()
-    {
+    getPurchasePrice() {
         throw new Error("Unsupported method")
     }
 
@@ -41,24 +38,21 @@ class Square
         throw new Error("Unsupported method")
     }
 
-    visit(player)  {
+    visit(player) {
         throw new Error("Unsupported method")
     }
 
-    isSellable() 
-    {
+    isSellable() {
         return false
     }
 
-    getOptions(player)
-    {
+    getOptions(player) {
         return []
     }
-    
+
 }
 
-class Mortgage extends Square
-{
+class Mortgage extends Square {
     constructor(propertyData) {
         super(propertyData)
         this.owner = null
@@ -66,13 +60,11 @@ class Mortgage extends Square
         this.purchasePrice = propertyData.purchase_value
     }
 
-    getPurchasePrice()
-    {
+    getPurchasePrice() {
         return this.purchasePrice
     }
 
-    isSellable() 
-    {
+    isSellable() {
         return true
     }
 
@@ -80,32 +72,29 @@ class Mortgage extends Square
         return 0
     }
 
-    visit(player) 
-    {
-        if ( this.isMortgaged ) return
-        if ( this.owner == player ) return;
-        if ( !this.owner ) {
+    visit(player) {
+        if (this.isMortgaged) return
+        if (this.owner == player) return;
+        if (!this.owner) {
             return;
         }
         player.pay(this.owner, this.calculateRent())
     }
 
-    getOptions(player)
-    {
+    getOptions(player) {
         let choices = []
-        if ( this.owner == null && player.balance >= this.purchasePrice ) {
-            choices.push({ key:"B", text:"Buy property", command: new Commands.Buy(player) })
+        if (this.owner == null && player.balance >= this.purchasePrice) {
+            choices.push({ key: "B", text: "Buy property", command: new Commands.Buy(player) })
         }
-        if ( this.owner == player ) {
-            choices.push({ key:"S", text:"Sell property", command: new Commands.Sell(player) })
+        if (this.owner == player) {
+            choices.push({ key: "S", text: "Sell property", command: new Commands.Sell(player) })
         }
-        choices.push({ key:"P", text:"Pass", command: new Commands.Pass(player) })
+        choices.push({ key: "P", text: "Pass", command: new Commands.Pass(player) })
         return choices
     }
 }
 
-class Property extends Mortgage
-{
+class Property extends Mortgage {
     constructor(propertyData) {
         super(propertyData)
         this.houses = []
@@ -116,24 +105,23 @@ class Property extends Mortgage
         this.owner = null
     }
 
-    isSellable() 
-    {
+    isSellable() {
         return true
     }
-    
+
+    getMortgageValue() {
+        return this.purchasePrice / 2
+    }
 
     calculateRent() {
-        if ( this.houses.length == 0 && this.hotels.length == 0 ) {
+        if (this.houses.length == 0 && this.hotels.length == 0) {
             return this.rentEmpty
         }
         return this.houses.length * this.rentPerHouse + this.hotels.length * this.rentPerHotel
     }
-
-   
 }
 
-class Card extends Square
-{
+class Card extends Square {
     constructor(propertyData) {
         super(propertyData)
 
@@ -143,8 +131,7 @@ class Card extends Square
         this.action = null
     }
 
-    fillCard(card, data)
-    {
+    fillCard(card, data) {
         card.text = data.text
         card.value = data.value
         card.action = data.action
@@ -161,44 +148,39 @@ class Card extends Square
     }
 }
 
-class Chance extends Card
-{
+class Chance extends Card {
     constructor(propertyData) {
         super(propertyData)
     }
 
-    createNewCard(data)
-    {
+    createNewCard(data) {
         const card = new Chance(data)
         this.fillCard(card, data)
         return card
     }
 
-    getData() { 
+    getData() {
         return data.chance[random.int(0, data.chance.length)]
     }
 }
 
-class CommunityChest extends Card
-{
+class CommunityChest extends Card {
     constructor(propertyData) {
         super(propertyData)
     }
 
-    createNewCard(data)
-    {
+    createNewCard(data) {
         const card = new CommunityChest(data)
         this.fillCard(card, data)
         return card
     }
 
-    getData() { 
+    getData() {
         return data.communityChest[random.int(0, data.communityChest.length)]
     }
 }
 
-class Go extends Square
-{
+class Go extends Square {
     constructor(propertyData) {
         super(propertyData)
         this.purchasePrice = propertyData.purchase_value
@@ -218,8 +200,7 @@ class Go extends Square
     }
 }
 
-class Jail extends Square
-{
+class Jail extends Square {
     constructor(propertyData) {
         super(propertyData)
     }
@@ -229,36 +210,57 @@ class Jail extends Square
     }
 }
 
-class FourGroup extends Mortgage
-{
+class FourGroup extends Mortgage {
     constructor(propertyData) {
         super(propertyData)
     }
 
-    calculateRent()
-    {
-        // TODO did these not have different
-        // rents based on how many you owned?
-        return this.rentEmpty
+    getCount(player) { 
+        return 0 
+    }
+
+    calculateRent() {
+        if ( this.owner == null ) {
+            return 0
+        }
+        const count = this.getCount(this.owner)
+        return this.rentEmpty * (2 ** (count-1))
     }
 }
 
-class Station extends FourGroup 
-{
+class Station extends FourGroup {
     constructor(propertyData) {
         super(propertyData)
     }
-}
 
-class Utility extends FourGroup
-{
-    constructor(propertyData) {
-        super(propertyData)
+    getCount(player) {
+        let count = 0
+        for (let p of player.properties) {
+            if (p.group == "station") {
+                count++;
+            }
+        }
+        return count
     }
 }
 
-class FreeParking extends Square
-{
+class Utility extends FourGroup {
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    getCount(player) {
+        let count = 0
+        for (let p of player.properties) {
+            if (p.group == "utility") {
+                count++;
+            }
+        }
+        return count
+    }
+}
+
+class FreeParking extends Square {
     constructor(propertyData) {
         super(propertyData)
     }
@@ -271,8 +273,7 @@ class FreeParking extends Square
     }
 }
 
-class Tax extends Square
-{
+class Tax extends Square {
     constructor(propertyData) {
         super(propertyData)
         this.purchasePrice = propertyData.purchase_value
@@ -294,21 +295,21 @@ class Tax extends Square
 function createProperty(propertyData) {
     let property = null
     const type = propertyData.group.toLowerCase()
-    if ( type == "chance" ) {
+    if (type == "chance") {
         property = new Chance(propertyData)
-    } else if ( type == "go" ) {
+    } else if (type == "go") {
         property = new Go(propertyData)
-    } else if ( type == "communitychest" ) {
+    } else if (type == "communitychest") {
         property = new CommunityChest(propertyData)
-    } else if ( type == "jail" ) {
+    } else if (type == "jail") {
         property = new Jail(propertyData)
-    } else if ( type == "station") {
+    } else if (type == "station") {
         property = new Station(propertyData)
-    } else if ( type == "utility" ) {
+    } else if (type == "utility") {
         property = new Utility(propertyData)
-    } else if ( type == "freeparking" ) {
+    } else if (type == "freeparking") {
         property = new FreeParking(propertyData)
-    } else if ( type == "tax" ) {
+    } else if (type == "tax") {
         property = new Tax(propertyData)
     } else {
         property = new Property(propertyData)
@@ -318,5 +319,6 @@ function createProperty(propertyData) {
 
 module.exports = {
     create: createProperty,
-    Chance: Chance
+    Chance: Chance,
+    CommunityChest: CommunityChest
 }
