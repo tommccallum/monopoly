@@ -1,7 +1,5 @@
 const assert = require('assert');
-const Observer = require("../../mocks/EventObserver");
 const Player = require('../../models/Player');
-const Mocks = require("../../mocks/MockSetup");
 const { MockChance } = require('../../mocks/ChanceCard');
 const { MockCommunityChest } = require('../../mocks/CommunityChestCard');
 
