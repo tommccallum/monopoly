@@ -4,10 +4,8 @@
 const { Object } = require("./Object")
 const { Event } = require("./Event")
 
-class Player extends Object
-{
-  constructor(index, token, balance) 
-  {
+class Player extends Object {
+  constructor(index, token, balance) {
     super()
     this.index = index  // index will start at 1
     this.balance = balance
@@ -22,22 +20,21 @@ class Player extends Object
     this.isOnDouble = false
   }
 
-  
+
 
   addIncome(amount) {
-    if ( amount < 0 ) {
+    if (amount < 0) {
       throw new Error("amount must be greater than or equal to zero")
     }
     this.balance += amount
-    this.notify(new Event(this, "announcement", {text: `Hooray! I received ${amount}! I now have ${this.balance} to spend.`}))
+    this.notify(new Event(this, "announcement", { text: `Hooray! I received ${amount}! I now have ${this.balance} to spend.` }))
   }
 
-  withdraw(amount)
-  {
-    if ( amount < 0 ) {
+  withdraw(amount) {
+    if (amount < 0) {
       throw new Error("amount must be greater than or equal to zero")
     }
-    if ( this.balance < amount ) {
+    if (this.balance < amount) {
       this.notify(new Event(this, "bankrupt"))
     }
     this.balance -= amount
@@ -55,21 +52,21 @@ class Player extends Object
   }
 
   useFreeFromJailCard() {
-    if ( this.isInJail() ) {
-      for( let index =0; index < this.chanceCards.length; index++ ) {
-        if ( "isFreeFromJailCard" in this.chanceCards[index] ) {
-          if ( this.chanceCards[index].isFreeFromJailCard ) {
-            this.chanceCards.splice(index,1)
+    if (this.isInJail()) {
+      for (let index = 0; index < this.chanceCards.length; index++) {
+        if ("isFreeFromJailCard" in this.chanceCards[index]) {
+          if (this.chanceCards[index].isFreeFromJailCard) {
+            this.chanceCards.splice(index, 1)
             this.freeFromJail()
             return true
           }
         }
       }
 
-      for( let index =0; index < this.communityChestCards.length; index++ ) {
-        if ( "isFreeFromJailCard" in this.communityChestCards[index] ) {
-          if ( this.communityChestCards[index].isFreeFromJailCard ) {
-            this.communityChestCards.splice(index,1)
+      for (let index = 0; index < this.communityChestCards.length; index++) {
+        if ("isFreeFromJailCard" in this.communityChestCards[index]) {
+          if (this.communityChestCards[index].isFreeFromJailCard) {
+            this.communityChestCards.splice(index, 1)
             this.freeFromJail()
             return true
           }
@@ -79,53 +76,53 @@ class Player extends Object
     return false
   }
 
-  getHouseCount() 
-  {
+  getHouseCount() {
     let total = 0
-    for( let p of this.properties ) {
+    for (let p of this.properties) {
       total += p.houseCount
     }
     return total
   }
 
-  getHotelCount() 
-  {
+  getHotelCount() {
     let total = 0
-    for( let p of this.properties ) {
+    for (let p of this.properties) {
       total += p.hotelCount
     }
     return total
   }
 
-  hasCard(name) 
-  {
-    for(let card of this.communityChestCards) {
-      if ( card.name == name ) return true
+  hasCard(name) {
+    for (let card of this.communityChestCards) {
+      if (card.name == name) {
+        return true
+      }
+    }
+    for (let card of this.chanceCards) {
+      if (card.name == name) {
+        return true
+      }
     }
     return false
   }
 
   sendStatus() {
     this.notify(new Event(this, "announcement", { text: `Balance: ${this.balance}` }))
-    this.notify(new Event(this, "announcement", { text: `Properties: ${this.properties.map((x) => { return x.name; }).join(",")}` }))    
+    this.notify(new Event(this, "announcement", { text: `Properties: ${this.properties.map((x) => { return x.name; }).join(",")}` }))
   }
   
 }
 
 
 
-class Human extends Player
-{
-  constructor(...args) 
-  {
+class Human extends Player {
+  constructor(...args) {
     super(...args)
   }
 }
 
-class Bot extends Player
-{
-  constructor(...args) 
-  {
+class Bot extends Player {
+  constructor(...args) {
     super(...args)
     this.isHuman = false
   }

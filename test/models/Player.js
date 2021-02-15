@@ -76,4 +76,38 @@ describe('Player model', () => {
             assert.strictEqual(player.inJail, false)
         });
     });
+
+    describe("when not in jail", () => {
+        it("and have free from jail Chance card, should not use card", () => {
+            const player = new Player.Human(0, {}, 1000)
+            player.inJail = false
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockChance(propertyData)
+            property.cardIndex = 5
+            const card = property.get()
+            player.chanceCards.push(card)
+            const wasCardUsed = player.useFreeFromJailCard()
+            assert.strictEqual(wasCardUsed, false)
+            assert.strictEqual(player.inJail, false)
+        });
+
+        it("and have free from jail Community Chest card, should not use card", () => {
+            const player = new Player.Human(0, {}, 1000)
+            player.inJail = false
+            const propertyData = {
+                group: "chance",
+                name: "Chance"
+            }
+            const property = new MockCommunityChest(propertyData)
+            property.cardIndex = 4
+            const card = property.get()
+            player.communityChestCards.push(card)
+            const wasCardUsed = player.useFreeFromJailCard()
+            assert.strictEqual(wasCardUsed, false)
+            assert.strictEqual(player.inJail, false)
+        });
+    });
 });
