@@ -8,6 +8,10 @@ class MockChance extends Property.Chance
         this.cardIndex = 0
     }
 
+    get() {
+        return this.createNewCard(data.chance[this.cardIndex])
+    }
+
     visit(player) {
         if ( data.chance.length == 0 ) {
             throw new Error("no chance cards available")

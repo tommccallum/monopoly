@@ -187,7 +187,7 @@ module.exports = {
             canBeSold: false
         }
     ],
-    communityCheck: [
+    communityChest: [
         {
             text: "Advance to 'Go'. (Collect $200)",
             action: (player) => { player.moveTo('GO'); },

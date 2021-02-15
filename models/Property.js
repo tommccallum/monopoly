@@ -139,6 +139,7 @@ class Card extends Square {
         this.usage = null
         this.canBeSold = false
         this.action = null
+        this.isFreeFromJailCard= false
     }
 
     fillCard(card, data) {
@@ -147,6 +148,7 @@ class Card extends Square {
         card.action = data.action
         card.usage = data.usage
         card.canBeSold = data.canBeSold
+        card.isFreeFromJailCard = data.isFreeFromJailCard
     }
 
     getData() { return {} }

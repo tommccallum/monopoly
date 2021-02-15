@@ -16,7 +16,7 @@ class Player extends Object
     this.location = -1 // we start off the board
     this.inJail = false
     this.chanceCards = []
-    this.communityChest = []
+    this.communityChestCards = []
     this.doubleCounter = 0
     this.isHuman = true
     this.isOnDouble = false
@@ -25,12 +25,18 @@ class Player extends Object
   
 
   addIncome(amount) {
+    if ( amount < 0 ) {
+      throw new Error("amount must be greater than or equal to zero")
+    }
     this.balance += amount
     this.notify(new Event(this, "announcement", {text: `Hooray! I received ${amount}! I now have ${this.balance} to spend.`}))
   }
 
   withdraw(amount)
   {
+    if ( amount < 0 ) {
+      throw new Error("amount must be greater than or equal to zero")
+    }
     if ( this.balance < amount ) {
       this.notify(new Event(this, "bankrupt"))
     }
@@ -45,15 +51,25 @@ class Player extends Object
 
   freeFromJail() {
     this.inJail = false
-    this.notify(newEvent(this, "freeFromJail"))
+    this.notify(new Event(this, "freeFromJail"))
   }
 
   useFreeFromJailCard() {
     if ( this.isInJail() ) {
-      for( let index =0; index < this.chanceCards.length; ii++ ) {
-        if ( "isFreeFromJailCard" in this.chanceCards[ii] ) {
-          if ( this.chanceCards[ii].isFreeFromJailCard ) {
+      for( let index =0; index < this.chanceCards.length; index++ ) {
+        if ( "isFreeFromJailCard" in this.chanceCards[index] ) {
+          if ( this.chanceCards[index].isFreeFromJailCard ) {
             this.chanceCards.splice(index,1)
+            this.freeFromJail()
+            return true
+          }
+        }
+      }
+
+      for( let index =0; index < this.communityChestCards.length; index++ ) {
+        if ( "isFreeFromJailCard" in this.communityChestCards[index] ) {
+          if ( this.communityChestCards[index].isFreeFromJailCard ) {
+            this.communityChestCards.splice(index,1)
             this.freeFromJail()
             return true
           }
@@ -83,7 +99,7 @@ class Player extends Object
 
   hasCard(name) 
   {
-    for(let card of this.communityChest) {
+    for(let card of this.communityChestCards) {
       if ( card.name == name ) return true
     }
     return false
