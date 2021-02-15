@@ -1,7 +1,7 @@
 ID,en_GB,FR
-1,Hit any to continue...,
-2,You entered {{resp}},
-3,,
+1,banker is bankrupt - oops!,
+2,number of sides must be an integer,
+3,"number of sides must be an integer, not a floating point",
 4,,
 5,,
 6,,

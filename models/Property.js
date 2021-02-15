@@ -81,12 +81,22 @@ class Mortgage extends Square {
         player.pay(this.owner, this.calculateRent())
     }
 
+
+    // TODO this is not quite right
+    // as we can Sell and Mortgage a property
+    // at any time so as part of these
+    // commands we have to ask the player to select 
+    // an property from their portfolio.
+    // Also check if we can sell/mortgage at
+    // any time in the game.
+
     getOptions(player) {
         let choices = []
         if (this.owner == null && player.balance >= this.purchasePrice) {
             choices.push({ key: "B", text: "Buy property", command: new Commands.Buy(player) })
         }
         if (this.owner == player) {
+            choices.push({ key: "M", text: "Mortgage property", command: new Commands.Mortgage(player) })
             choices.push({ key: "S", text: "Sell property", command: new Commands.Sell(player) })
         }
         choices.push({ key: "P", text: "Pass", command: new Commands.Pass(player) })

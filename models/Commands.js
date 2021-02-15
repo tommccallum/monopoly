@@ -46,6 +46,8 @@ class Buy extends Command
     }
 }
 
+
+
 class Sell extends Command
 {
     constructor(...args) {
@@ -57,9 +59,21 @@ class Sell extends Command
     }
 }
 
+class Mortgage extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute() {
+        this.receiver.performMortgage()
+    }
+}
+
 module.exports = {
     Roll: Roll,
     Buy: Buy,
     Sell: Sell,
-    Pass: Pass
+    Pass: Pass,
+    Mortgage: Mortgage
 }
