@@ -1,6 +1,6 @@
 "use strict"
 
-const Event = require("../models/Event")
+const { Event } = require("../models/Event")
 
 module.exports = {
     playerCount: 3,
@@ -92,7 +92,7 @@ module.exports = {
         {
             text: "Bank pays you dividend of $50",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 50 }))
+                player.notify(new Event(player, "payDividend", { amount: 50 }))
             },
             usage: 'immediate',
             canBeSold: false
@@ -135,7 +135,7 @@ module.exports = {
         {
             text: "Pay poor tax $15",
             action: (player) => {
-                player.tax(15)
+                player.payTax(15)
             },
             usage: "immediate",
             canBeSold: false
@@ -167,7 +167,7 @@ module.exports = {
         {
             text: "Your building and loan matures. Collect $150.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 150 }))
+                player.notify(new Event(player, "payDividend", { amount: 150 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -175,7 +175,7 @@ module.exports = {
         {
             text: "You have won a competition. Collect $100.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+                player.notify(new Event(player, "payDividend", { amount: 100 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -197,7 +197,7 @@ module.exports = {
         {
             text: "Bank error in your favour. Collect $200.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 200 }))
+                player.notify(new Event(player, "payDividend", { amount: 200 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -213,7 +213,7 @@ module.exports = {
         {
             text: "From sale of stock. Collect $50.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 50 }))
+                player.notify(new Event(player, "payDividend", { amount: 50 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -240,7 +240,7 @@ module.exports = {
         {
             text: "Grand Opera Night. Collect $50 from each player.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payMe", { amount: 50 }))
+                player.notify(new Event(player, "payMe", { amount: 50 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -248,7 +248,7 @@ module.exports = {
         {
             text: "Holiday Fund matures. Collect $100.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+                player.notify(new Event(player, "payDividend", { amount: 100 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -256,7 +256,7 @@ module.exports = {
         {
             text: "Income Tax refund. Collect $20.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 20 }))
+                player.notify(new Event(player, "payDividend", { amount: 20 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -264,7 +264,7 @@ module.exports = {
         {
             text: "It's your birthday. Collect $10 from each player.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payMe", { amount: 10 }))
+                player.notify(new Event(player, "payMe", { amount: 10 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -272,7 +272,7 @@ module.exports = {
         {
             text: "Life insurance matures. Collect $100.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+                player.notify(new Event(player, "payDividend", { amount: 100 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -296,7 +296,7 @@ module.exports = {
         {
             text: "Receive $25 consultancy fee.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 25 }))
+                player.notify(new Event(player, "payDividend", { amount: 25 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -312,7 +312,7 @@ module.exports = {
         {
             text: "You have won second prize in a beauty contest. Collect $10.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 10 }))
+                player.notify(new Event(player, "payDividend", { amount: 10 }))
             },
             usage: "immediate",
             canBeSold: false
@@ -320,7 +320,7 @@ module.exports = {
         {
             text: "You have inherited some money. Collect $100.",
             action: (player) => {
-                player.notify(new Event.Event(player, "payDividend", { amount: 100 }))
+                player.notify(new Event(player, "payDividend", { amount: 100 }))
             },
             usage: "immediate",
             canBeSold: false

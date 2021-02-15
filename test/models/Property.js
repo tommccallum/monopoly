@@ -26,10 +26,10 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 0
-            const oldBalance = player.balance
+            const oldBalance = player.model.balance
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 0) // should be at Go
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 0) // should be at Go
             assert.strictEqual(newBalance - oldBalance, 200)
         });
 
@@ -42,11 +42,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 1
-            const oldBalance = player.balance
-            player.location = 1
+            const oldBalance = player.model.balance
+            player.model.location = 1
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 23) // should be at Trafalgar Square
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 23) // should be at Trafalgar Square
             assert.strictEqual(newBalance - oldBalance, 0)
         });
 
@@ -59,11 +59,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 1
-            const oldBalance = player.balance
-            player.location = 24
+            const oldBalance = player.model.balance
+            player.model.location = 24
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 23) // should be at Trafalgar Square
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 23) // should be at Trafalgar Square
             assert.strictEqual(newBalance - oldBalance, 200)
         });
 
@@ -76,11 +76,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 2
-            const oldBalance = player.balance
-            player.location = 2
+            const oldBalance = player.model.balance
+            player.model.location = 2
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 11) // should be at Trafalgar Square
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 11) // should be at Trafalgar Square
             assert.strictEqual(newBalance - oldBalance, 0)
         });
 
@@ -93,11 +93,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 2
-            const oldBalance = player.balance
-            player.location = 33
+            const oldBalance = player.model.balance
+            player.model.location = 33
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 11) // should be at Trafalgar Square
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 11) // should be at Trafalgar Square
             assert.strictEqual(newBalance - oldBalance, 200)
         });
 
@@ -111,11 +111,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 3
-            const oldBalance = player.balance
-            player.location = 2
+            const oldBalance = player.model.balance
+            player.model.location = 2
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 4) // should be at Trafalgar Square
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 4) // should be at Trafalgar Square
             assert.strictEqual(newBalance - oldBalance, 0)
         });
 
@@ -128,11 +128,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 3
-            const oldBalance = player.balance
-            player.location = 34
+            const oldBalance = player.model.balance
+            player.model.location = 34
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 4) // should be at Trafalgar Square
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 4) // should be at Trafalgar Square
             assert.strictEqual(newBalance - oldBalance, 200)
         });
 
@@ -145,11 +145,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 4
-            const oldBalance = player.balance
-            player.location = 6
+            const oldBalance = player.model.balance
+            player.model.location = 6
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 6) 
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 6) 
             assert.strictEqual(newBalance - oldBalance, 50)
         });
 
@@ -162,13 +162,13 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 5
-            const oldBalance = player.balance
-            player.location = 6
+            const oldBalance = player.model.balance
+            player.model.location = 6
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 6) 
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 6) 
             assert.strictEqual(newBalance - oldBalance, 0)
-            assert.strictEqual(player.chanceCards.length, 1)
+            assert.strictEqual(player.model.chanceCards.length, 1)
         });
 
         it('check Chance Card 6, go back 3 spaces.', () => {
@@ -180,13 +180,13 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 6
-            const oldBalance = player.balance
-            player.location = 6
+            const oldBalance = player.model.balance
+            player.model.location = 6
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 3) 
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 3) 
             assert.strictEqual(newBalance - oldBalance, 0)
-            assert.strictEqual(player.chanceCards.length, 0)
+            assert.strictEqual(player.model.chanceCards.length, 0)
         });
 
         it('check Chance Card 7, go to jail without passing go.', () => {
@@ -198,13 +198,13 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 7
-            const oldBalance = player.balance
-            player.location = 6
+            const oldBalance = player.model.balance
+            player.model.location = 6
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 9) 
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 9) 
             assert.strictEqual(newBalance - oldBalance, 0)
-            assert.strictEqual(player.chanceCards.length, 0)
+            assert.strictEqual(player.model.chanceCards.length, 0)
         });
 
         it('check Chance Card 8, Make general repairs to your properties..', () => {
@@ -216,19 +216,19 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 8
-            const oldBalance = player.balance
+            const oldBalance = player.model.balance
             const oldBanker = monopoly.banker.model.balance
-            player.location = 6
+            player.model.location = 6
             // overwrite original function
-            player.getHouseCount = () => 3
-            player.getHotelCount = () => 4
+            player.model.getHouseCount = () => 3
+            player.model.getHotelCount = () => 4
             // expected repairs is 475
             property.visit(player)
-            const newBalance = player.balance
+            const newBalance = player.model.balance
             const newBanker = monopoly.banker.model.balance
-            assert.strictEqual(player.location, 6) 
+            assert.strictEqual(player.model.location, 6) 
             assert.strictEqual(newBalance - oldBalance, -475)
-            assert.strictEqual(player.chanceCards.length, 0)
+            assert.strictEqual(player.model.chanceCards.length, 0)
             assert.strictEqual(newBanker - oldBanker, 475)
         });
 
@@ -241,15 +241,15 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 9
-            const oldBalance = player.balance
+            const oldBalance = player.model.balance
             const oldBanker = monopoly.banker.model.balance
-            player.location = 6
+            player.model.location = 6
             property.visit(player)
-            const newBalance = player.balance
+            const newBalance = player.model.balance
             const newBanker = monopoly.banker.model.balance
-            assert.strictEqual(player.location, 6) 
+            assert.strictEqual(player.model.location, 6) 
             assert.strictEqual(newBalance - oldBalance, -15)
-            assert.strictEqual(player.chanceCards.length, 0)
+            assert.strictEqual(player.model.chanceCards.length, 0)
             assert.strictEqual(newBanker - oldBanker, 15)
         });
 
@@ -262,11 +262,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 10
-            const oldBalance = player.balance
-            player.location = 24
+            const oldBalance = player.model.balance
+            player.model.location = 24
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 4) 
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 4) 
             assert.strictEqual(newBalance - oldBalance, 200)
         });
 
@@ -279,11 +279,11 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 11
-            const oldBalance = player.balance
-            player.location = 38
+            const oldBalance = player.model.balance
+            player.model.location = 38
             property.visit(player)
-            const newBalance = player.balance
-            assert.strictEqual(player.location, 38) 
+            const newBalance = player.model.balance
+            assert.strictEqual(player.model.location, 38) 
             assert.strictEqual(newBalance - oldBalance, 0)
         });
 
@@ -296,15 +296,15 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 12
-            const oldBalance = player.balance
-            const oldBalance1 = monopoly.players[1].balance
-            const oldBalance2 = monopoly.players[2].balance
-            player.location = 6
+            const oldBalance = player.model.balance
+            const oldBalance1 = monopoly.players[1].model.balance
+            const oldBalance2 = monopoly.players[2].model.balance
+            player.model.location = 6
             property.visit(player)
-            const newBalance = player.balance
-            const newBalance1 = monopoly.players[1].balance
-            const newBalance2 = monopoly.players[2].balance
-            assert.strictEqual(player.location, 6) 
+            const newBalance = player.model.balance
+            const newBalance1 = monopoly.players[1].model.balance
+            const newBalance2 = monopoly.players[2].model.balance
+            assert.strictEqual(player.model.location, 6) 
             assert.strictEqual(newBalance - oldBalance, -100)
             assert.strictEqual(newBalance1 - oldBalance1, 50)
             assert.strictEqual(newBalance2 - oldBalance2, 50)
@@ -319,13 +319,13 @@ describe('Property model', () => {
             }
             const property = new MockChance(propertyData)
             property.cardIndex = 13
-            const oldBalance = player.balance
+            const oldBalance = player.model.balance
             const oldBanker = monopoly.banker.model.balance
-            player.location = 6
+            player.model.location = 6
             property.visit(player)
-            const newBalance = player.balance
+            const newBalance = player.model.balance
             const newBanker = monopoly.banker.model.balance
-            assert.strictEqual(player.location, 6) 
+            assert.strictEqual(player.model.location, 6) 
             assert.strictEqual(newBalance - oldBalance, 150)
             assert.strictEqual(newBanker - oldBanker, -150)
         });

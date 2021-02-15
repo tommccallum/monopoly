@@ -1,27 +1,29 @@
-const Player = require("./Player")
-const Object = require("./Object")
-const Token = require("./Token")
-const Dice = require("./Dice")
-const Property = require("./Property")
-const Event = require("./Event")
+const { Human, Bot } = require("./Player")
+const { PlayerController } = require("../controllers/PlayerController")
+const { Object } = require("./Object")
+const { Token } = require("./Token")
+const { Dice } = require("./Dice")
+const { Event } = require("./Event")
+const { Board } = require("./Board")
+const { DiceCollection } = require("./DiceCollection")
 
-class Monopoly extends Object.Object {
+class Monopoly extends Object {
   constructor(gameData, banker, realPlayerCount) {
     super()
     this.playerCount = gameData.playerCount
     this.realPlayerCount = realPlayerCount
     this.players = []
     this.currentPlayer = 0
-    this.squares = []
-    this.banker = banker
-    this.dice = [new Dice.Dice(), new Dice.Dice()]
     this.gameData = gameData
     this.doubleCounter = 0
     this.lastMovesGenerated = null
+
+    this.banker = banker
+    this.board = new Board(this.gameData, this.banker)
+    this.diceCollection = new DiceCollection([new Dice(), new Dice()])
   }
 
   setup() {
-    this.createBoardSquares()
     this.createPlayers()
     this.addPlayerListeners()
     this.whoStarts()
@@ -36,31 +38,22 @@ class Monopoly extends Object.Object {
     // so we can detect when they have gone round the board
     for (let p of this.players) {
       p.addListener(this)
-      p.addListener("passGo", this.squares[0])
+      p.addListener("passGo", this.board.getSquareAtIndex(0))
       p.addListener(this.banker)
     }
   }
 
   createPlayers() {
     for (let ii = 0; ii < this.playerCount; ii++) {
+      let player = null;
       if (ii < this.realPlayerCount) {
-        this.players.push(new Player.Human(ii + 1, new Token.Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount, this.squares.length, this ))
+        player = new Human(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount)
       } else {
-        this.players.push(new Player.Bot(ii + 1, new Token.Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount, this.squares.length, this))
+        player = new Bot(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount)
       }
-      const player = this.players[this.players.length-1]
-      this.notify(new Event.Event(this, "announcement", { text: `Creating human ${player.index} with token ${player.token.name} and balance ${player.balance}`}))
-    }
-  }
-
-  createBoardSquares() {
-    for (let squareData of this.gameData.squares) {
-      const square = Property.create(squareData)
-      square.setBanker(this.banker)
-      this.squares.push(square)
-      if (square.isSellable()) {
-        this.banker.addTitleDeed(square)
-      }
+      const playerController = new PlayerController(player, this.board, this.diceCollection)
+      this.players.push(playerController)
+      this.notify(new Event(this, "announcement", { text: `Creating human ${player.index} with token ${player.token.name} and balance ${player.balance}`}))
     }
   }
 
@@ -82,55 +75,12 @@ class Monopoly extends Object.Object {
     }
   }
 
-  indexOf(squareName) 
-  {
-    for(let index=0; index < this.squares.length; index++) {
-      if ( this.squares[index].name.toLowerCase() == squareName.toLowerCase() ) {
-        return index
-      }
-    }
-    throw new Error(`square name '${squareName}' was not found`)
-  }
-
-  findNearest(squareGroup, start)
-  {
-    if ( typeof(start) == "undefined" ) {
-      throw new Error("start location is undefined")
-    }
-    for(let index=start; index < this.squares.length; index++) {
-      if ( this.squares[index].group.toLowerCase() == squareGroup.toLowerCase() ) {
-        return index
-      }
-    }
-    if ( start > 0 ) {
-      for( let index=0; index < start; index++) {
-        if ( this.squares[index].group.toLowerCase() == squareGroup.toLowerCase() ) {
-          return index
-        }
-      }
-    }
-    throw new Error(`square group '${squareGroup}' was not found`)
-  }
-
-  rollDice() {
-    let total = {
-      sum: 0,
-      values: []
-    }
-    for (let die of this.dice) {
-      const val = die.roll()
-      total.values.push(val)
-      total.sum += val
-    }
-    return total
-  }
-
   whoStarts() {
     let maxSoFar = 0
     let starter = 0
     for (let index in this.players) {
-      const result = this.rollDice()
-      this.notify(new Event.Event(this, "announcement", {text: `Player ${this.players[index].index} rolled a ${result.values[0]}` }))
+      const result = this.diceCollection.rollDice()
+      this.notify(new Event(this, "announcement", {text: `Player ${this.players[index].index} rolled a ${result.values[0]}` }))
       if (maxSoFar < result.values[0]) {
         maxSoFar = result.values[0]
         starter = index
@@ -138,14 +88,14 @@ class Monopoly extends Object.Object {
     }
     this.currentPlayer = starter
     const player = this.players[this.currentPlayer]
-    this.notify(new Event.Event(this, "announcement", {text: `Player ${player.index} won the highest roll and will start` }))
+    this.notify(new Event(this, "announcement", {text: `Player ${player.index} won the highest roll and will start` }))
   }
 
   _checkUserInput(userInput)
   {
     if ( !this.lastMovesGenerated.isEmpty() ) {
       if (userInput == null || userInput.trim().length == 0) {
-        this.notify(new Event.Event(this, "announcement", {text: "Invalid action specified, please try again." }))
+        this.notify(new Event(this, "announcement", {text: "Invalid action specified, please try again." }))
         return false
       }
     }
@@ -167,7 +117,7 @@ class Monopoly extends Object.Object {
         try {
           this.lastMovesGenerated.findAndExecute(userInput)
         } catch( error ) {
-          this.notify(new Event.Event(this, "announcement", { text:error.message}))
+          this.notify(new Event(this, "announcement", { text:error.message}))
         }
       }
     } else {
