@@ -24,3 +24,7 @@ npm run console
 ```
 npm test
 ```
+
+## Internationalisation
+
+* For the console version different languages can be added in the lang csv files.

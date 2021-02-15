@@ -121,6 +121,9 @@ function replPrompt(rl)
     infiniteReadLoop(null)          // start our infinite loop
 }
 
+// TODO check for arguments about which language to use
+// and load appropriate language strings
+
 const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout
