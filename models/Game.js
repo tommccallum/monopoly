@@ -57,24 +57,6 @@ class Monopoly extends Object {
     }
   }
 
-  onPayAllPlayers(event) {
-    for( let p of this.players ) {
-      if ( event.source != p ) {
-        p.addIncome(event.data.amount)
-        event.source.withdraw(event.data.amount)
-      }
-    }
-  }
-
-  onPayMe(event) {
-    for( let p of this.players ) {
-      if ( event.source != p ) {
-        p.withdraw(event.data.amount)
-        event.source.addIncome(event.data.amount)
-      }
-    }
-  }
-
   whoStarts() {
     let maxSoFar = 0
     let starter = 0
@@ -122,7 +104,7 @@ class Monopoly extends Object {
       }
     } else {
       // we are here as the user just hit return
-      this.next()
+      this.nextPlayersTurn()
       return this.lastMovesGenerated
     }
 
@@ -130,16 +112,34 @@ class Monopoly extends Object {
     let player = this.players[this.currentPlayer]
     this.lastMovesGenerated = player.getAvailableMoves()
     if ( this.lastMovesGenerated.isEmpty() ) {
-      this.next()
+      this.nextPlayersTurn()
     }
     return this.lastMovesGenerated
   }
 
-  next() {
+  nextPlayersTurn() {
     this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
     const nextPlayer = this.players[this.currentPlayer]
     nextPlayer.startTurn()
     this.lastMovesGenerated = nextPlayer.getAvailableMoves()
+  }
+
+  onPayAllPlayers(event) {
+    for( let p of this.players ) {
+      if ( event.source != p ) {
+        p.addIncome(event.data.amount)
+        event.source.withdraw(event.data.amount)
+      }
+    }
+  }
+
+  onPayMe(event) {
+    for( let p of this.players ) {
+      if ( event.source != p ) {
+        p.withdraw(event.data.amount)
+        event.source.addIncome(event.data.amount)
+      }
+    }
   }
 }
 

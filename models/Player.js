@@ -20,8 +20,6 @@ class Player extends Object {
     this.isOnDouble = false
   }
 
-
-
   addIncome(amount) {
     if (amount < 0) {
       throw new Error("amount must be greater than or equal to zero")
@@ -106,9 +104,11 @@ class Player extends Object {
     return false
   }
 
-  sendStatus() {
-    this.notify(new Event(this, "announcement", { text: `Balance: ${this.balance}` }))
-    this.notify(new Event(this, "announcement", { text: `Properties: ${this.properties.map((x) => { return x.name; }).join(",")}` }))
+  sendStatus() 
+  {
+    this.notify(new Event(this, "announcement", {
+      text: `Balance: ${this.balance}\nProperties: ${this.properties.map((x) => { return x.name; }).join(",")}` 
+    }))
   }
   
 }
