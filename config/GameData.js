@@ -9,7 +9,7 @@ module.exports = {
         { group: "go", name: "GO", purchase_value: 200 },
         { group: "Brown", name: "Old Kent Road", purchase_value: 60, house_price: 30 },
         { group: "Brown", name: "Whitechapel Road", purchase_value: 60, house_price: 30 },
-        { group: "incometax", name: "Income Tax", puchase_value: -200 },
+        { group: "tax", name: "Income Tax", purchase_value: 200 },
         { group: "station", name: "King's Cross Station", puchase_value: 200 },
         { group: "property", name: "The Angel Islington", purchase_value: 100 },
         { group: "chance", name: "Chance" },
@@ -43,7 +43,7 @@ module.exports = {
         { group: "station", name: "Liverpool St. Station", purchase_value: 200 },
         { group: "chance", name: "Chance" },
         { group: "property", name: "Park Lane", purchase_value: 350 },
-        { group: "tax", name: "Super Tax", purchase_value: -100 },
+        { group: "tax", name: "Super Tax", purchase_value: 100 },
         { group: "property", name: "Mayfair", purchase_value: 400 }
     ],
     tokens: [

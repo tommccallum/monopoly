@@ -93,7 +93,7 @@ class Mortgage extends Square {
 
     getOptions(player) {
         let choices = []
-        if (this.owner == null && player.balance >= this.purchasePrice) {
+        if (this.owner == null && player.getBalance() >= this.purchasePrice) {
             choices.push({ key: "B", text: "Buy property", command: new Commands.Buy(player) })
         }
         if (this.owner == player) {
@@ -152,12 +152,13 @@ class Card extends Square {
         card.isFreeFromJailCard = data.isFreeFromJailCard
     }
 
-    getData() { return {} }
+    getData() { throw new Error("this function should not be called")  }
+    addCardToPlayer() { throw new Error("this function should not be called") }
 
     visit(player) {
         const data = this.getData()
         const card = this.createNewCard(data)
-        player.addChance(card)
+        this.addCardToPlayer(player, card)
     }
 }
 
@@ -175,6 +176,10 @@ class Chance extends Card {
     getData() {
         return data.chance[random.int(0, data.chance.length)]
     }
+
+    addCardToPlayer(player, card) {
+        player.addChance(card)
+    }
 }
 
 class CommunityChest extends Card {
@@ -190,6 +195,10 @@ class CommunityChest extends Card {
 
     getData() {
         return data.communityChest[random.int(0, data.communityChest.length)]
+    }
+
+    addCardToPlayer(player, card) {
+        player.addCommunityChest(card)
     }
 }
 
@@ -293,8 +302,7 @@ class Tax extends Square {
     }
 
     visit(player) {
-        // TODO change to withdraw
-        player.tax(this.purchasePrice)
+        player.withdraw(this.purchasePrice)
         this.banker.payIn(this.purchasePrice)
     }
 }

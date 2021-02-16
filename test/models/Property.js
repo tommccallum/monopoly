@@ -185,7 +185,7 @@ describe('Property model', () => {
             property.visit(player)
             const newBalance = player.model.balance
             assert.strictEqual(player.model.location, 3) 
-            assert.strictEqual(newBalance - oldBalance, 0)
+            assert.strictEqual(newBalance - oldBalance, -200) // we land on Income Tax :)
             assert.strictEqual(player.model.chanceCards.length, 0)
         });
 
@@ -330,4 +330,19 @@ describe('Property model', () => {
             assert.strictEqual(newBanker - oldBanker, -150)
         });
     });
+
+    describe("test landing on a tax square", () => {
+        it('should withdraw from player, and add to bank', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const oldBalance = player.model.balance
+            const oldBanker = monopoly.banker.model.balance
+            player.model.location = 3
+            player.moveTo("Income Tax")
+            const newBalance = player.model.balance
+            const newBanker = monopoly.banker.model.balance
+            assert.strictEqual(newBalance - oldBalance, -200)
+            assert.strictEqual(newBanker - oldBanker, 200)
+        });
+    })
 });

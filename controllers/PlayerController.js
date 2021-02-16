@@ -16,6 +16,19 @@ class PlayerController extends Object {
         return this.model.index
     }
 
+    getBalance() {
+        return this.model.balance
+    }
+
+    withdraw(amount) {
+        console.log("here")
+        this.model.withdraw(amount)
+    }
+
+    addProperty(property) {
+        this.model.properties.push(property)
+    }
+
     startTurn() {
         this.notify(new Event(this, "announcement", { text: `\n\n${this.model.token.name} (player ${this.model.index}) is now the current player` }))
         this.model.sendStatus()

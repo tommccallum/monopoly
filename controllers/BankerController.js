@@ -61,10 +61,10 @@ class BankerController extends Object.Object {
     onPurchase(event) {
         console.log("Purchase event fired")
         if ( event.data.square.owner == null ) {
-            if ( event.source.balance >= event.data.square.getPurchasePrice() ) {
+            if ( event.source.getBalance() >= event.data.square.getPurchasePrice() ) {
                 this.payIn(event.data.square.getPurchasePrice())
-                event.source.balance -= event.data.square.getPurchasePrice()
-                event.source.properties.push(event.data.square)
+                event.source.withdraw(event.data.square.getPurchasePrice())
+                event.source.addProperty(event.data.square)
                 this.notify(new Event.Event(this, "announcement", {text: `Purchase of '${event.data.square.name}' was successful`}))
                 return
             } else {
