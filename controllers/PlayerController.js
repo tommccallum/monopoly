@@ -1,5 +1,7 @@
 const { Object } = require("../models/Object")
 const { Event } = require("../models/Event")
+const { ActionCollection } = require("../models/ActionCollection")
+const Commands = require("../models/Commands")
 
 class PlayerController extends Object {
     constructor(playerModel, board, dice) {
@@ -10,15 +12,19 @@ class PlayerController extends Object {
         this.availableMoves = null
     }
 
+    getIndex() {
+        return this.model.index
+    }
+
     startTurn() {
         this.notify(new Event(this, "announcement", { text: `\n\n${this.model.token.name} (player ${this.model.index}) is now the current player` }))
         this.model.sendStatus()
-        this.availableMoves = new ActionCollection.ActionCollection(this)
+        this.availableMoves = new ActionCollection(this)
         this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
     }
 
     generateMoves() {
-        const moves = new ActionCollection.ActionCollection(this)
+        const moves = new ActionCollection(this)
 
         if (this.model.isInJail()) {
             // player gets to use a get out of jail free card
@@ -114,7 +120,7 @@ class PlayerController extends Object {
 
     performDoNothingThisGo() {
         console.log("pass")
-        this.availableMoves = new ActionCollection.ActionCollection(this)
+        this.availableMoves = new ActionCollection(this)
         if (this.isOnDouble) {
             this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
         }
@@ -147,7 +153,7 @@ class PlayerController extends Object {
         console.log("buy")
         const square = this.board.getSquareAtIndex(this.model.location)
         this.notify(new Event(this, "purchase", { text: `${this.model.token.name} attempts to buy the property`, player: this, square: square }))
-        this.availableMoves = new ActionCollection.ActionCollection(this)
+        this.availableMoves = new ActionCollection(this)
         if (this.isOnDouble) {
             this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
         }
@@ -157,7 +163,7 @@ class PlayerController extends Object {
         console.log("sell")
         const square = this.board.getSquareAtIndex(this.model.location)
         this.notify(new Event(this, "sale", { text: `${this.model.token.name} attempts to sell the property`, player: this, square: square }))
-        this.availableMoves = new ActionCollection.ActionCollection(this)
+        this.availableMoves = new ActionCollection(this)
         if (this.isOnDouble) {
             this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
         }

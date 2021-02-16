@@ -8,6 +8,7 @@
 // In some languages you can bend this requirement.
 
 const Commands = require("./Commands")
+const random = require("random")
 const data = require("../config/GameData")
 
 class Square {
