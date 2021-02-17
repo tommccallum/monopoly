@@ -26,7 +26,18 @@ class PlayerController extends Object {
     }
 
     addProperty(property) {
+        property.owner = this
         this.model.properties.push(property)
+    }
+
+    removeProperty(property) {
+        const index = this.model.properties.indexOf(property)
+        if ( index > -1 ) {
+            property.owner = null
+            this.model.properties.splice(index,1)
+        } else {
+            throw new Error("player does not own property!")
+        }
     }
 
     startTurn() {
@@ -190,8 +201,22 @@ class PlayerController extends Object {
 
     performSellProperty() {
         this.availableMoves.remove("S")
-        const square = this.board.getSquareAtIndex(this.model.location)
-        this.notify(new Event(this, "sale", { text: `${this.model.token.name} attempts to sell the property`, player: this, square: square }))        
+        if ( this.model.properties.length == 0 ) {
+            this.notify(new Event(this, "announcement", { text: "No properties are owned yet!" }))
+        } else {
+            const propertyList = this.model.properties.map((property, index) => {
+                return { key: (index+1).toString(), text: property.name, 
+                    command: new Commands.SelectPropertyToSell(this),
+                    data: { property: property }
+                }
+            })
+            this.availableMoves.addAll(propertyList)
+            this.notify(new Event(this, "announcement", { text: "Select a property to sell" }))
+        }
+    }
+
+    performSaleOfProperty(data) {
+        this.notify(new Event(this, "sale", { text: `${this.model.token.name} attempts to sell the property`, square: data.property }))        
     }
 
     performListProperties() {

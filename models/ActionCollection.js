@@ -90,12 +90,18 @@ class ActionCollection
      * @param {string} text 
      * @param {Commmand} command 
      */
-    add(key, text, command) {
-        const obj = { key: key.toUpperCase(), text: text, command:command }
-        if ( !this.exists(key) ) {
-            if ( key.toUpperCase() == "P" ) {
+    add(key, text, command, data) {
+        let obj = null
+        if ( typeof(key) == "object" ) {
+            obj = key
+            obj.key = obj.key.toUpperCase()
+        } else {
+            obj = { key: key.toUpperCase(), text: text, command:command, data: data }
+        }
+        if ( !this.exists(obj.key) ) {
+            if ( obj.key.toUpperCase() == "P" ) {
                 this.remove("R")
-            } else if ( key.toUpperCase() == "R" ) {
+            } else if ( obj.key.toUpperCase() == "R" ) {
                 this.remove("P")
             } 
             this.moves.push(obj)
@@ -110,8 +116,7 @@ class ActionCollection
     {
         for( let choice of choices ) {
             if ( !this.exists(choice.key) ) {
-                choice.key = choice.key.toUpperCase()
-                this.add(choice.key, choice.text, choice.command)
+                this.add(choice)
             }
         }
     }
@@ -140,7 +145,7 @@ class ActionCollection
         for( let move of this.moves) {
             if ( move.key.toLowerCase() == userInput.toLowerCase() ) {
                 if ( "command" in move ) {
-                    move.command.execute()
+                    move.command.execute(move.data)
                 }
                 return
             }

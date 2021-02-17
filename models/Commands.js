@@ -20,8 +20,8 @@ class Pass extends Command
         super(...args)
     }
 
-    execute() {
-        this.receiver.performDoNothingThisGo()
+    execute(data) {
+        this.receiver.performDoNothingThisGo(data)
     }
 }
 
@@ -31,8 +31,8 @@ class Roll extends Command
         super(...args)
     }
 
-    execute() {
-        this.receiver.performRollOfDiceAction()
+    execute(data) {
+        this.receiver.performRollOfDiceAction(data)
     }
 }
 
@@ -42,8 +42,8 @@ class Buy extends Command
         super(...args)
     }
 
-    execute() {
-        this.receiver.performBuyProperty()
+    execute(data) {
+        this.receiver.performBuyProperty(data)
     }
 }
 
@@ -55,8 +55,19 @@ class Sell extends Command
         super(...args)
     }
 
-    execute() {
-        this.receiver.performSellProperty()
+    execute(data) {
+        this.receiver.performSellProperty(data)
+    }
+}
+
+class SelectPropertyToSell extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute(data) {
+        this.receiver.performSaleOfProperty(data)
     }
 }
 
@@ -66,8 +77,8 @@ class Mortgage extends Command
         super(...args)
     }
 
-    execute() {
-        this.receiver.performMortgage()
+    execute(data) {
+        this.receiver.performMortgage(data)
     }
 }
 
@@ -89,5 +100,6 @@ module.exports = {
     Sell: Sell,
     Pass: Pass,
     Mortgage: Mortgage,
-    PropertyList: PropertyList
+    PropertyList: PropertyList,
+    SelectPropertyToSell: SelectPropertyToSell
 }

@@ -81,15 +81,16 @@ class BankerController extends Object.Object {
     }
 
     onSale(event) {
-        console.log("Sell event fired")
-        if ( event.data.square.owner == event.source ) {
-            // TODO fix with proper rules and adjust for houses and hotels
-            // simplified to sell at purchase price
-            event.source.addIncome(event.data.square.getPurchasePrice())
-            event.data.square.owner = null
-            this.model.balance -= event.data.square.getPurchasePrice()
+        const property = event.data.square
+        if ( property.owner == event.source ) {
+            // TODO adjust for real selling price
+            this.model.balance -= property.getPurchasePrice()
+            event.source.addIncome(property.getPurchasePrice())
+            event.source.removeProperty(property)
+            this.notify(new Event.Event(this, "announcement", {text: `Congratulations, the sale of '${property.name}' was successful.`}))
+        } else {
+            this.notify(new Event.Event(this, "announcement", {text: `Sale of '${property.name}' was not successful, you do not own the property`}))
         }
-        this.notify(new Event.Event(this, "announcement", {text: `Sale of '${event.data.square.name}' was not successful, you do not own the property`}))
     }
 
     onPayDividend(event) {

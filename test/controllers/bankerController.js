@@ -172,9 +172,51 @@ describe('Banker Controller', () => {
             }
         });
 
+        it("should not sell on an onSale event if does not own property", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const square = monopoly.board.getSquareAtIndex(1)
+            const event = new Event(playerController, "sale", {square: square})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onSale(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, 0)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, 0) 
+            assert.strictEqual(playerController.model.properties.length, 0)   
+        });
+
+        it("should sell on an onSale event if does own property", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const square = monopoly.board.getSquareAtIndex(1)
+            square.owner = playerController
+            playerController.model.properties.push(square)
+            assert.strictEqual(playerController.model.properties.length, 1)   
+
+            const event = new Event(playerController, "sale", {square: square})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onSale(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, -60)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, 60) 
+            assert.strictEqual(playerController.model.properties.length, 0)   
+        });
+
         // TODO test player bankrupcy
         // TODO test bank bankrupcy
         // TODO test onSale
+        // TODO purchase a house
+        // TODO purchase a hotel
     });
 
 
