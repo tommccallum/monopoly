@@ -20,7 +20,7 @@ module.exports = {
         { group: "utility", name: "Electric Company", purchase_value: 150 },
         { group: "property", name: "Whitehall", purchase_value: 140 },
         { group: "property", name: "Northumberland Avenue", purchase_value: 160 },
-        { group: "station", name: "Maylebone Station", purchase_value: 200 },
+        { group: "station", name: "Marylebone Station", purchase_value: 200 },
         { group: "property", name: "Bow Street", purchase_value: 180 },
         { group: "communitychest", name: "Community Chest" },
         { group: "property", name: "Marlborough Street", purchase_value: 180 },
