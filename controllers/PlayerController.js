@@ -30,7 +30,7 @@ class PlayerController extends Object {
     }
 
     startTurn() {
-        this.notify(new Event(this, "announcement", { text: `\n\n${this.model.token.name} (player ${this.model.index}) is now the current player` }))
+        this.notify(new Event(this, "announcement", { text: `\n${this.model.token.name} (player ${this.model.index}) is now the current player` }))
         this.model.sendStatus()
         this.availableMoves = new ActionCollection(this.model.isHuman)
         this.availableMoves.add("L", "List Properties", new Commands.PropertyList(this))
