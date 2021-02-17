@@ -65,6 +65,8 @@ class PlayerController extends Object {
     }
 
     getAvailableMoves() {
+        // TODO remove default moves by having a flag we can use in ActionCollection that removes
+        // those commands marked "DEFAULT" or something like that.
         if ( this.availableMoves.size() == 2 && this.availableMoves.exists("P")
             && this.availableMoves.exists("L") ) {
             this.availableMoves.remove("P")
