@@ -108,4 +108,6 @@ describe('Player model', () => {
             assert.strictEqual(player.inJail, false)
         });
     });
+
+    // TODO add tests for property colorGroup functions
 });

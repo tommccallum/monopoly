@@ -44,10 +44,10 @@ class Player extends Object {
 
   hasCompleteColorGroupIgnoreMortgageStatus() {
     const sorted = this.sortPropertiesByColorGroup()
-    for( let s of sorted ) {
-      if ( s.length > 0 ) {
-        const expectedSize = s[0].colorGroupSize
-        if ( s.length == expectedSize ) {
+    for( let s of sorted.keys() ) {
+      if ( sorted[s].length > 0 ) {
+        const expectedSize = sorted[s].colorGroupSize
+        if ( sorted[s].length == expectedSize ) {
           return true
         }
       }

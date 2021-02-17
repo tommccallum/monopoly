@@ -101,7 +101,6 @@ class Mortgage extends Square {
             choices.push({ key: "M", text: "Mortgage property", command: new Commands.Mortgage(player) })
             choices.push({ key: "S", text: "Sell property", command: new Commands.Sell(player) })
         }
-        choices.push({ key: "P", text: "Pass", command: new Commands.Pass(player) })
         return choices
     }
 }

@@ -26,6 +26,15 @@ class PlayerController extends Object {
         return this.model.balance
     }
 
+
+    isInJail() {
+        return this.model.isInJail()
+    }
+
+    addIncome(amount) {
+        this.model.addIncome(amount)
+    }
+
     withdraw(amount) {
         this.model.withdraw(amount)
     }
@@ -53,6 +62,7 @@ class PlayerController extends Object {
         this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
     }
 
+    // TODO make sure that we continue until the user chooses Pass otherwise when actions fail they cannot sell stuff to get money
     generateMoves() {
         this.availableMoves.add("L", "List Properties", new Commands.PropertyList(this))
         if (this.model.isInJail()) {
@@ -90,9 +100,9 @@ class PlayerController extends Object {
                         this.availableMoves.add("O", "Buy a hotel", new Commands.BuyHotel(this))
                     }
                 }
-                this.availableMoves.add("P", "Pass", new Commands.Pass(this))
             }
         }
+        this.availableMoves.add("P", "Pass", new Commands.Pass(this))
         return this.availableMoves
     }
 
@@ -345,19 +355,6 @@ class PlayerController extends Object {
         }
     }
 
-    // forwarded functions to model
-
-    isInJail() {
-        return this.model.isInJail()
-    }
-
-    addIncome(amount) {
-        this.model.addIncome(amount)
-    }
-
-    withdraw(amount) {
-        this.model.withdraw(amount)
-    }
 
     /**
      * Forward all player events on to listeners
