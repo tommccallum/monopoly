@@ -71,6 +71,16 @@ class ActionCollection
         this.moves = newMovesArray
     }
 
+    removeListIndices() {
+        const newMovesArray = []
+        for( let index in this.moves ) {
+            if ( this.moves[index].command.isListIndex == false ) {
+                newMovesArray.push(this.moves[index])
+            }
+        }
+        this.moves = newMovesArray
+    }
+
     isOnlyPassRemaining() {
         if ( this.moves.length == 0 ) {
             return false

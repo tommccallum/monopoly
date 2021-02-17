@@ -79,7 +79,7 @@ class Mortgage extends Square {
         if (!this.owner) {
             return;
         }
-        player.pay(this.owner, this.calculateRent())
+        player.payAnotherPlayer(this.owner, this.calculateRent())
     }
 
 
@@ -112,9 +112,9 @@ class Property extends Mortgage {
         this.hotelCount = 0
         this.housePurchasePrice = propertyData.house_purchase_price
         this.hotelPurchasePrice = propertyData.hotel_purchase_price
-        this.rentPerHotel = propertyData.rent_per_hotel
-        this.rentPerHouse = propertyData.rent_per_house
-        this.rentEmpty = propertyData.rent_empty
+        this.rent = propertyData.rent
+        this.rentPerHotel = propertyData.rent[propertyData.rent.length - 1]
+        this.rentEmpty = propertyData.rent[0]
         this.owner = null
     }
 
@@ -138,7 +138,7 @@ class Property extends Mortgage {
         if (this.houses == 0 && this.hotels == 0) {
             return this.rentEmpty
         }
-        return this.houses * this.rentPerHouse + this.hotels * this.rentPerHotel
+        return this.houseCount * this.rent[this.houseCount] + this.hotelCount * this.rentPerHotel
     }
 }
 
@@ -251,13 +251,7 @@ class FourGroup extends Mortgage {
         return 0 
     }
 
-    calculateRent() {
-        if ( this.owner == null ) {
-            return 0
-        }
-        const count = this.getCount(this.owner)
-        return this.rentEmpty * (2 ** (count-1))
-    }
+    
 }
 
 class Station extends FourGroup {
@@ -274,6 +268,14 @@ class Station extends FourGroup {
         }
         return count
     }
+
+    calculateRent() {
+        if ( this.owner == null ) {
+            return 0
+        }
+        const count = this.getCount(this.owner)
+        return this.rent[count]
+    }
 }
 
 class Utility extends FourGroup {
@@ -289,6 +291,15 @@ class Utility extends FourGroup {
             }
         }
         return count
+    }
+
+    calculateRent() {
+        if ( this.owner == null ) {
+            return 0
+        }
+        const count = this.getCount(this.owner)
+        // TODO how to get dice value in here cleanly?
+        return this.rent_multiplier[count] * diceValue
     }
 }
 

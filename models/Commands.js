@@ -8,6 +8,7 @@ class Command
     constructor(receiver) {
         this.receiver = receiver
         this.permanent = false
+        this.isListOption = false
     }
     execute() {
         throw new Error("execute called on interface")
@@ -62,6 +63,7 @@ class SelectPropertyToSell extends Command
 {
     constructor(...args) {
         super(...args)
+        this.isListOption = true
     }
 
     execute(data) {
@@ -96,6 +98,7 @@ class BuyHouse extends Command
 {
     constructor(...args) {
         super(...args)
+        this.isListOption = true
     }
 
     execute(data) {
@@ -118,6 +121,7 @@ class BuyHotel extends Command
 {
     constructor(...args) {
         super(...args)
+        this.isListOption = true
     }
 
     execute(data) {
