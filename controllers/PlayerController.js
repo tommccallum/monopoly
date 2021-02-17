@@ -69,6 +69,19 @@ class PlayerController extends Object {
                 // we have the option to sell or mortgage any property and to pass of course
                 this.availableMoves.add("M", "Mortgage property", new Commands.Mortgage(this))
                 this.availableMoves.add("S", "Sell property", new Commands.Sell(this))
+                this.availableMoves.add("H", "Buy a house", new Commands.BuyAHouse(this))
+
+                // we can only buy a hotel if ANY of our properties have 4 houses
+                let canBuyAHotel = false
+                for( let p of this.properties ) {
+                    if ( p.getHouseCount() > 3 ) { // TODO remove this magic number and get from game data
+                        canBuyAHotel = true
+                        break
+                    }
+                }
+                if ( canBuyAHotel ) {
+                    this.availableMoves.add("O", "Buy a hotel", new Commands.BuyAHotel(this))
+                }
                 this.availableMoves.add("P", "Pass", new Commands.Pass(this))
             }
         }
@@ -228,6 +241,44 @@ class PlayerController extends Object {
             }).join("\n")
             this.notify(new Event(this, "announcement", { text: propertyList }))
         }
+    }
+
+    performBuyHouse() {
+        if ( this.model.properties.length == 0 ) {
+            this.notify(new Event(this, "announcement", { text: "No properties are owned yet!" }))
+        } else {
+            const propertyList = this.model.properties.map((property, index) => {
+                return { key: (index+1).toString(), text: property.name, 
+                    command: new Commands.SelectPropertyToBuyHouseFor(this),
+                    data: { property: property }
+                }
+            })
+            this.availableMoves.addAll(propertyList)
+            this.notify(new Event(this, "announcement", { text: "Select a property to buy a house for" }))
+        }
+    }
+
+    performBuyHouseForProperty(data) {
+        this.notify(new Event(this, "buyHouse", { text: `${this.model.token.name} attempts to buy a house for property '${data.property.name}'`, square: data.property }))        
+    }
+
+    performBuyHotel() {
+        if ( this.model.properties.length == 0 ) {
+            this.notify(new Event(this, "announcement", { text: "No properties are owned yet!" }))
+        } else {
+            const propertyList = this.model.properties.map((property, index) => {
+                return { key: (index+1).toString(), text: property.name, 
+                    command: new Commands.SelectPropertyToBuyHotelFor(this),
+                    data: { property: property }
+                }
+            })
+            this.availableMoves.addAll(propertyList)
+            this.notify(new Event(this, "announcement", { text: "Select a property to buy a hotel for" }))
+        }
+    }
+
+    performBuyHotelForProperty(data) {
+        this.notify(new Event(this, "buyHotel", { text: `${this.model.token.name} attempts to buy a hotel for property '${data.property.name}'`, square: data.property }))        
     }
 
     addChance(card) {

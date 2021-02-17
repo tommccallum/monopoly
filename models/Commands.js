@@ -47,8 +47,6 @@ class Buy extends Command
     }
 }
 
-
-
 class Sell extends Command
 {
     constructor(...args) {
@@ -94,6 +92,51 @@ class PropertyList extends Command
     }
 }
 
+class BuyHouse extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute(data) {
+        this.receiver.performBuyHouse(data)
+    }
+}
+
+class SelectPropertyToBuyHouseFor extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute(data) {
+        this.receiver.performBuyHouseForProperty(data)
+    }
+}
+
+class BuyHotel extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute(data) {
+        this.receiver.performBuyHotel(data)
+    }
+}
+
+class SelectPropertyToBuyHotelFor extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute(data) {
+        this.receiver.performBuyHotelForProperty(data)
+    }
+}
+
+
 module.exports = {
     Roll: Roll,
     Buy: Buy,
@@ -101,5 +144,10 @@ module.exports = {
     Pass: Pass,
     Mortgage: Mortgage,
     PropertyList: PropertyList,
-    SelectPropertyToSell: SelectPropertyToSell
+    SelectPropertyToSell: SelectPropertyToSell,
+    BuyHouse: BuyHouse,
+    SelectPropertyToBuyHouseFor: SelectPropertyToBuyHouseFor,
+    BuyHotel: BuyHotel,
+    SelectPropertyToBuyHotelFor: SelectPropertyToBuyHotelFor
+
 }

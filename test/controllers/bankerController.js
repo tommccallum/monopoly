@@ -179,6 +179,7 @@ describe('Banker Controller', () => {
             const bankerModel = new BankerModel.Model()
             const controller = new BankerController.Controller(bankerModel)
             const square = monopoly.board.getSquareAtIndex(1)
+            square.purchasePrice = 60
             const event = new Event(playerController, "sale", {square: square})
             const oldBalance = controller.model.balance
             const playerOldBalance = playerController.model.balance
@@ -198,6 +199,7 @@ describe('Banker Controller', () => {
             const controller = new BankerController.Controller(bankerModel)
             const square = monopoly.board.getSquareAtIndex(1)
             square.owner = playerController
+            square.purchasePrice = 60
             playerController.model.properties.push(square)
             assert.strictEqual(playerController.model.properties.length, 1)   
 
@@ -212,9 +214,109 @@ describe('Banker Controller', () => {
             assert.strictEqual(playerController.model.properties.length, 0)   
         });
 
+        it("should purchase of a house if does own property", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const square = monopoly.board.getSquareAtIndex(1)
+            square.owner = playerController
+            square.housePurchasePrice = 50
+            playerController.model.properties.push(square)
+            assert.strictEqual(playerController.model.properties.length, 1)   
+
+            const event = new Event(playerController, "buyHouse", {square: square})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onBuyHouse(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, 50)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, -50) 
+            assert.strictEqual(playerController.model.properties.length, 1)   
+            assert.strictEqual(square.houseCount, 1)
+        });
+
+        it("should not purchase of a house if property has 4 on it", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const square = monopoly.board.getSquareAtIndex(1)
+            square.owner = playerController
+            square.housePurchasePrice = 50
+            square.houseCount = monopoly.gameData.requiredHousesBeforeBuyHotel
+            playerController.model.properties.push(square)
+            assert.strictEqual(playerController.model.properties.length, 1)   
+
+            const event = new Event(playerController, "buyHouse", {square: square})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onBuyHouse(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, 0)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, 0) 
+            assert.strictEqual(playerController.model.properties.length, 1)   
+            assert.strictEqual(square.houseCount, monopoly.gameData.requiredHousesBeforeBuyHotel)
+        });
+
+        it("should purchase of a hotel if has 4 houses", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const square = monopoly.board.getSquareAtIndex(1)
+            square.owner = playerController
+            square.hotelPurchasePrice = 50
+            square.houseCount = monopoly.gameData.requiredHousesBeforeBuyHotel
+            playerController.model.properties.push(square)
+            assert.strictEqual(playerController.model.properties.length, 1)   
+
+            const event = new Event(playerController, "buyHotel", {square: square})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onBuyHotel(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, 50)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, -50) 
+            assert.strictEqual(playerController.model.properties.length, 1)   
+            assert.strictEqual(square.houseCount, 0)
+            assert.strictEqual(square.hotelCount, 1)
+        });
+
+        it("should fail purchase of a hotel if has < 4 houses", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const square = monopoly.board.getSquareAtIndex(1)
+            square.owner = playerController
+            square.hotelPurchasePrice = 50
+            square.houseCount = monopoly.gameData.requiredHousesBeforeBuyHotel-1
+            playerController.model.properties.push(square)
+            assert.strictEqual(playerController.model.properties.length, 1)   
+
+            const event = new Event(playerController, "buyHotel", {square: square})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onBuyHotel(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, 0)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, 0) 
+            assert.strictEqual(playerController.model.properties.length, 1)   
+            assert.strictEqual(square.houseCount, monopoly.gameData.requiredHousesBeforeBuyHotel-1)
+            assert.strictEqual(square.hotelCount, 0)
+        });
+
         // TODO test player bankrupcy
         // TODO test bank bankrupcy
-        // TODO test onSale
         // TODO purchase a house
         // TODO purchase a hotel
     });

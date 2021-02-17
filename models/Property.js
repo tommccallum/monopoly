@@ -108,12 +108,22 @@ class Mortgage extends Square {
 class Property extends Mortgage {
     constructor(propertyData) {
         super(propertyData)
-        this.houses = []
-        this.hotels = []
-        this.rentPerHotel = propertyData.rentPerHotel
-        this.rentPerHouse = propertyData.rentPerHouse
-        this.rentEmpty = propertyData.rentEmpty
+        this.houseCount = 0
+        this.hotelCount = 0
+        this.housePurchasePrice = propertyData.house_purchase_price
+        this.hotelPurchasePrice = propertyData.hotel_purchase_price
+        this.rentPerHotel = propertyData.rent_per_hotel
+        this.rentPerHouse = propertyData.rent_per_house
+        this.rentEmpty = propertyData.rent_empty
         this.owner = null
+    }
+
+    getHousePurchasePrice() {
+        return this.housePurchasePrice
+    }
+
+    getHotelPurchasePrice() {
+        return this.hotelPurchasePrice
     }
 
     isSellable() {
@@ -125,10 +135,10 @@ class Property extends Mortgage {
     }
 
     calculateRent() {
-        if (this.houses.length == 0 && this.hotels.length == 0) {
+        if (this.houses == 0 && this.hotels == 0) {
             return this.rentEmpty
         }
-        return this.houses.length * this.rentPerHouse + this.hotels.length * this.rentPerHotel
+        return this.houses * this.rentPerHouse + this.hotels * this.rentPerHotel
     }
 }
 

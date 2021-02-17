@@ -81,6 +81,9 @@ class BankerController extends Object.Object {
     }
 
     onSale(event) {
+        if ( !("square" in event.data) ) {
+            throw new Error("square property not set in event.data")
+        }
         const property = event.data.square
         if ( property.owner == event.source ) {
             // TODO adjust for real selling price
@@ -92,6 +95,62 @@ class BankerController extends Object.Object {
             this.notify(new Event.Event(this, "announcement", {text: `Sale of '${property.name}' was not successful, you do not own the property`}))
         }
     }
+
+    onBuyHouse(event) {
+        if ( !("square" in event.data) ) {
+            throw new Error("square property not set in event.data")
+        }
+        const player = event.source
+        const property = event.data.square
+        if ( property.owner == player ) {
+            // TODO remove this magic number and get it from the gamedata
+            if ( property.houseCount >= 4 ) {
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was not successful, you already have 4 houses`}))
+                return
+            }
+            if ( player.getBalance() >= property.getHousePurchasePrice() ) {
+                this.payIn(property.getHousePurchasePrice())
+                player.withdraw(property.getHousePurchasePrice())
+                property.houseCount++
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was successful`}))
+                return
+            } else {
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was not successful, too expensive`}))
+                return
+            }
+        }
+        this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was not successful, property already owned`}))
+    }
+
+    onBuyHotel(event)
+    {
+        if ( !("square" in event.data) ) {
+            throw new Error("square property not set in event.data")
+        }
+        const player = event.source
+        const property = event.data.square
+        if ( property.owner == player ) {
+            // TODO remove this magic number and get it from the gamedata
+            if ( property.houseCount < 4 ) {
+                // TODO remote the magic 4 from this
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was not successful, it requires 4 houses for a hotel`}))
+                return
+            }
+            if ( player.getBalance() >= property.getHotelPurchasePrice() ) {
+                this.payIn(property.getHotelPurchasePrice())
+                player.withdraw(property.getHotelPurchasePrice())
+                property.houseCount=0
+                property.hotelCount++
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a hotel for '${event.data.square.name}' was successful`}))
+                return
+            } else {
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a hotel for '${event.data.square.name}' was not successful, too expensive`}))
+                return
+            }
+        }
+        this.notify(new Event.Event(this, "announcement", {text: `Purchase of a hotel for '${event.data.square.name}' was not successful, property already owned`}))
+    }
+
 
     onPayDividend(event) {
         if ( !("amount" in event.data) ) {
