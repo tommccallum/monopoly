@@ -103,7 +103,7 @@ describe('Banker Controller', () => {
             }
         });
 
-        it("should handle an onPurchase event", () => {
+        it("should buy on an onPurchase event if player has enough money", () => {
             const observer = new EventObserver()
             const monopoly = Mocks.MockSetup()
             const playerController = monopoly.players[0]
@@ -120,6 +120,61 @@ describe('Banker Controller', () => {
             assert.strictEqual(playerNewBalance - playerOldBalance, -60) 
             assert.strictEqual(playerController.model.properties.length, 1)   
         });
+
+        it("should not buy on an onPurchase event if player does not have money", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            playerController.model.balance = 59
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const square = monopoly.board.getSquareAtIndex(1)
+            square.purchasePrice = 60 // make sure this does not change as our game data will change
+            const event = new Event(playerController, "purchase", {square: square})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onPurchase(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, 0)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, 0) 
+            assert.strictEqual(playerController.model.properties.length, 0)   
+        });
+
+        it("should give money to a player on an onPayDividend event", () => {
+            const observer = new EventObserver()
+            const monopoly = Mocks.MockSetup()
+            const playerController = monopoly.players[0]
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const event = new Event(playerController, "payDividend", {amount: 10})
+            const oldBalance = controller.model.balance
+            const playerOldBalance = playerController.model.balance
+            controller.onPayDividend(event)
+            const newBalance = controller.model.balance
+            const playerNewBalance = playerController.model.balance
+            assert.strictEqual(newBalance - oldBalance, -10)    
+            assert.strictEqual(playerNewBalance - playerOldBalance, 10)  
+        });
+
+        it("should throw onPayDividend event if no amount property set", () => {
+            const observer = new EventObserver()
+            const bankerModel = new BankerModel.Model()
+            const controller = new BankerController.Controller(bankerModel)
+            const event = new Event(bankerModel, "payDividend")
+            const oldBalance = controller.model.balance
+            try {
+                controller.onPayDividend(event)
+                assert.fail("this should have thrown an error as no amount was specified")
+            } catch(error) {
+                const newBalance = controller.model.balance
+                assert.strictEqual(newBalance - oldBalance, 0)    
+            }
+        });
+
+        // TODO test player bankrupcy
+        // TODO test bank bankrupcy
+        // TODO test onSale
     });
 
 

@@ -62,6 +62,9 @@ class BankerController extends Object.Object {
     }
 
     onPurchase(event) {
+        if ( !("square" in event.data) ) {
+            throw new Error("square property not set in event.data")
+        }
         if ( event.data.square.owner == null ) {
             if ( event.source.getBalance() >= event.data.square.getPurchasePrice() ) {
                 this.payIn(event.data.square.getPurchasePrice())
@@ -90,6 +93,9 @@ class BankerController extends Object.Object {
     }
 
     onPayDividend(event) {
+        if ( !("amount" in event.data) ) {
+            throw new Error("amount property not set in event.data")
+        }
         this.payOut(event.source, event.data.amount)
     }
 }
