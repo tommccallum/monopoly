@@ -47,6 +47,7 @@ class Monopoly extends Object {
       } else {
         player = new Bot(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount)
       }
+      player.mortgageGame = this.gameData.mortgageInterestRate
       const playerController = new PlayerController(player, this.board, this.diceCollection)
       this.players.push(playerController)
       // TODO clean this ?: up into some sort of call to player instead

@@ -18,6 +18,7 @@ class Player extends Object {
     this.doubleCounter = 0
     this.isHuman = true
     this.isOnDouble = false
+    this.mortgageRate = 0.1
   }
 
   hasCompleteUnmortgagedColorGroup() {
@@ -80,9 +81,7 @@ class Player extends Object {
     if ( !property.isMortgaged ) {
       throw new Error("property is not mortgaged")
     }
-    // TODO move this 10% above mortgage value to gamedata
-    const mortgageRate = 0.1
-    this.withdraw(property.getMortgageValue() * ( 1 + mortgageRate ))
+    this.withdraw(property.getMortgageValue() * ( 1 + this.mortgageRate ))
   }
 
   addIncome(amount) {
