@@ -6,6 +6,11 @@ class Observer extends Object.Object
     {
         super()
         this.callbacks = []
+        this.eventsCaught = 0
+    }
+
+    getEventsCaught() {
+        return this.eventsCaught
     }
 
     add(callback)
@@ -16,6 +21,7 @@ class Observer extends Object.Object
     onAny(event)
     {
         for( let callback of this.callbacks) {
+            this.eventsCaught++
             callback(event)
         }
     }

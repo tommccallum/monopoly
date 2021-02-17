@@ -51,6 +51,9 @@ class BankerController extends Object.Object {
     }
 
     onPayBank(event) {
+        if ( !("amount" in event.data) ) {
+            throw new Error("amount property not set in event.data")
+        }
         this.payIn(event.data.amount)
     }
 

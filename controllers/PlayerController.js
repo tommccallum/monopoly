@@ -10,7 +10,7 @@ class PlayerController extends Object {
         playerModel.addListener(this)
         this.board = board
         this.dice = dice
-        this.availableMoves = null
+        this.availableMoves = new ActionCollection(this.model.isHuman)
     }
 
     getIndex() {
