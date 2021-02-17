@@ -242,6 +242,16 @@ class Jail extends Square {
     }
 }
 
+class GotoJail extends Square {
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    visit(player) {
+        player.gotoJailWithoutPassingGo()
+    }
+}
+
 class FourGroup extends Mortgage {
     constructor(propertyData) {
         super(propertyData)
@@ -257,6 +267,7 @@ class FourGroup extends Mortgage {
 class Station extends FourGroup {
     constructor(propertyData) {
         super(propertyData)
+        this.rent = propertyData.rent
     }
 
     getCount(player) {
@@ -281,6 +292,7 @@ class Station extends FourGroup {
 class Utility extends FourGroup {
     constructor(propertyData) {
         super(propertyData)
+        this.rent_multiplier = propertyData.rent_multiplier
     }
 
     getCount(player) {
@@ -345,6 +357,8 @@ function createProperty(propertyData) {
         property = new CommunityChest(propertyData)
     } else if (type == "jail") {
         property = new Jail(propertyData)
+    } else if (type == "gotojail") {
+        property = new GotoJail(propertyData)
     } else if (type == "station") {
         property = new Station(propertyData)
     } else if (type == "utility") {
@@ -353,8 +367,10 @@ function createProperty(propertyData) {
         property = new FreeParking(propertyData)
     } else if (type == "tax") {
         property = new Tax(propertyData)
-    } else {
+    } else if ( type == "property") {
         property = new Property(propertyData)
+    } else {
+        throw new Error(`invalid property data ${propertyData.group}`)
     }
     return property
 }
