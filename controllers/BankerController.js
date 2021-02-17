@@ -93,6 +93,19 @@ class BankerController extends Object.Object {
         console.log("Bankrupt event fired")
     }
 
+    onMortgage(event) {
+        // if property has houses/hotels then these are sold back first, so throw an error
+        // if unimproved property then we can mortgage it for the mortgage value of the property
+    }
+
+    onHouseSale(event) {
+        // player is selling for half the house purchase value
+    }
+
+    onHotelSale(event) {
+        // player is selling for half the hotel purchase value
+    }
+
     onPurchase(event) {
         if ( !("square" in event.data) ) {
             throw new Error("square property not set in event.data")

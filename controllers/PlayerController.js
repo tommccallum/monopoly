@@ -259,6 +259,7 @@ class PlayerController extends Object {
     }
 
     performListProperties() {
+        // TODO list by color group
         if ( this.model.properties.length == 0 ) {
             this.notify(new Event(this, "announcement", { text: "No properties are owned yet!" }))
         } else {
@@ -270,6 +271,7 @@ class PlayerController extends Object {
     }
 
     performBuyHouse() {
+        // TODO only list those that we have a full colorgroup for
         if ( this.model.properties.length == 0 ) {
             this.notify(new Event(this, "announcement", { text: "No properties are owned yet!" }))
         } else {
@@ -295,6 +297,7 @@ class PlayerController extends Object {
     }
 
     performBuyHotel() {
+        // TODO only list those that we have a full colorgroup for
         if ( this.model.properties.length == 0 ) {
             this.notify(new Event(this, "announcement", { text: "No properties are owned yet!" }))
         } else {
