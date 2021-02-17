@@ -41,6 +41,49 @@ class ActionCollection
         return null
     }
 
+    containsOnlyPermanentActionsOrPass() {
+        for( let index in this.moves ) {
+            if ( !this.moves[index].command.permanent 
+                && this.moves[index].key.toUpperCase() != "P" ) {
+                return false
+            }
+        }
+        return true
+    }
+
+    removePermanentActions() {
+        const newMovesArray = []
+        for( let index in this.moves ) {
+            if ( !this.moves[index].command.permanent ) {
+                newMovesArray.push(this.moves[index])
+            }
+        }
+        this.moves = newMovesArray
+    }
+
+    removePass() {
+        const newMovesArray = []
+        for( let index in this.moves ) {
+            if ( this.moves[index].key.toUpperCase() != "P" ) {
+                newMovesArray.push(this.moves[index])
+            }
+        }
+        this.moves = newMovesArray
+    }
+
+    isOnlyPassRemaining() {
+        if ( this.moves.length == 0 ) {
+            return false
+        }
+        if ( this.moves.length > 1 ) {
+            return false
+        }
+        if ( this.moves[0].key.toUpperCase() == "P" ) {
+            return true
+        }
+        return false
+    }
+
     /**
      * Adds a single command to the collection
      * @param {string} key 
@@ -50,6 +93,11 @@ class ActionCollection
     add(key, text, command) {
         const obj = { key: key.toUpperCase(), text: text, command:command }
         if ( !this.exists(key) ) {
+            if ( key.toUpperCase() == "P" ) {
+                this.remove("R")
+            } else if ( key.toUpperCase() == "R" ) {
+                this.remove("P")
+            } 
             this.moves.push(obj)
         }
     }
@@ -63,7 +111,7 @@ class ActionCollection
         for( let choice of choices ) {
             if ( !this.exists(choice.key) ) {
                 choice.key = choice.key.toUpperCase()
-                this.moves.push(choice)
+                this.add(choice.key, choice.text, choice.command)
             }
         }
     }
@@ -73,6 +121,15 @@ class ActionCollection
      */
     isEmpty() {
         return this.moves.length == 0
+    }
+
+    contains(key) {
+        for( let move of this.moves) {
+            if ( move.key.toLowerCase() == key.toLowerCase() ) {
+                return true
+            }
+        }
+        return false
     }
 
     /**
@@ -96,6 +153,9 @@ class ActionCollection
      */
     getRandom() 
     {
+        if ( this.moves.length == 0 ) {
+            throw new Error("no moves available")
+        }
         const r = random.int(0, this.moves.length-1)
         return this.moves[r].key.toLowerCase()
     }

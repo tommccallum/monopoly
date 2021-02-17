@@ -64,21 +64,20 @@ class PlayerController extends Object {
         return this.availableMoves
     }
 
+    /**
+     * Get the available moves that the player could do.  For humans we remove any extra sets where the only
+     * reasonable move is Pass.  For bots we remove all permanent actions which are for the human users only e.g.
+     * listing properties.
+     */
     getAvailableMoves() {
-        // TODO remove default moves by having a flag we can use in ActionCollection that removes
-        // those commands marked "DEFAULT" or something like that.
-        if ( this.availableMoves.size() == 2 && this.availableMoves.exists("P")
-            && this.availableMoves.exists("L") ) {
-            this.availableMoves.remove("P")
-            this.availableMoves.remove("L")
+        if ( this.availableMoves.containsOnlyPermanentActionsOrPass() ) {
+            this.availableMoves.removePermanentActions()
         }
-        if ( this.availableMoves.size() == 1 && this.availableMoves.exists("L")
-            || this.availableMoves.exists("P") ) {
-            this.availableMoves.remove("P")
-            this.availableMoves.remove("L")
+        if ( !this.model.isHuman ) {
+            this.availableMoves.removePermanentActions()
         }
-        if ( this.model.isHuman == false ) {
-            this.availableMoves.remove("L")
+        if ( this.availableMoves.isOnlyPassRemaining() ) {
+            this.availableMoves.removePass()
         }
         return this.availableMoves;
     }
