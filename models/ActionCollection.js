@@ -61,8 +61,10 @@ class ActionCollection
     addAll(choices) 
     {
         for( let choice of choices ) {
-            choice.key = choice.key.toUpperCase()
-            this.moves.push(choice)
+            if ( !this.exists(choice.key) ) {
+                choice.key = choice.key.toUpperCase()
+                this.moves.push(choice)
+            }
         }
     }
 

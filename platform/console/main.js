@@ -79,6 +79,11 @@ class Logger extends Object.Object
     {
         console.log(`\x1b[31mBanker's balance has changed from ${event.data.old} to ${event.data.new}\x1b[0m`)
     }
+
+    onPlayerStatus(event) {
+        const line = "_".repeat(event.data.text.length)
+        console.log(`\n${line}\n\n\x1b[32m${event.data.text}\x1b[0m\n${line}\n`)
+    }
 }
 
 // REPL = READ-EVAL-PROMPT-LOOP and is the common term for a console based interactive application

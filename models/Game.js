@@ -116,6 +116,13 @@ class Monopoly extends Object {
   }
 
   nextPlayersTurn() {
+    // just before we start the next turn lets output 
+    // the player scores
+    const scores = this.players.map((player) => {
+      return `${player.model.token.name}: ${player.model.balance}`
+    }).join(" ")
+    this.notify(new Event(this, "playerStatus", { text: scores }))
+
     this.currentPlayer = (this.currentPlayer + 1) % this.players.length;
     const nextPlayer = this.players[this.currentPlayer]
     nextPlayer.startTurn()
