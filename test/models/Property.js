@@ -345,4 +345,27 @@ describe('Property model', () => {
             assert.strictEqual(newBanker - oldBanker, 200)
         });
     })
+
+    describe("test landing on a utility square", () => {
+        it('should pay rent according to roll of dice', () => {
+            const monopoly = Mocks.MockSetup()
+            const player = monopoly.players[0]
+            const playerWhoOwnsUtility = monopoly.players[1]
+            const utility = monopoly.board.getSquareAtIndex(11)
+            playerWhoOwnsUtility.addProperty(utility)
+
+            // force the lastThrow variable
+            const rolled = player.dice.rollDice()
+            player.lastThrow = rolled
+
+            const oldBalance = player.model.balance
+            const oldOwnerBalance = playerWhoOwnsUtility.model.balance
+            player.model.location = 3
+            player.moveTo("Electric Company")
+            const newBalance = player.model.balance
+            const newOwnerBalance = playerWhoOwnsUtility.model.balance
+            assert.strictEqual(newBalance - oldBalance, -rolled.sum * 4)
+            assert.strictEqual(newOwnerBalance - oldOwnerBalance, rolled.sum * 4)
+        });
+    })
 });

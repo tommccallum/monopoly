@@ -57,6 +57,37 @@ class BankerController extends Object.Object {
         this.payIn(event.data.amount)
     }
 
+
+    /**
+     * According to the rules: A player is bankrupt, when he owes more than he can pay either to another player or to the Bank. 
+     * 
+     * CASE 1: OWE PLAYER MONEY
+     * If his debt is to another player, he must turn over to that player all that he has of value and retire from the game. 
+     * 
+     * In making this settlement, if he owns houses or hotels, he must return these to the Bank in exchange for money to the
+     * extent of one-half the amount paid for them and this cash is given to the creditor. 
+     * 
+     * If he has mortgaged property he also turns this property over to his creditor, but the new owner must at once pay the 
+     * Bank the amount of interest on the loan, which is 10% of the value of the property. 
+     * 
+     * After the new owner does this, he may, at his option, pay the principal or hold the property until some later turn at 
+     * which time he may lift the mortgage. 
+     * 
+     * If he holds property in this way until a later turn, he must pay the interest again when he lifts the mortgage. 
+     * 
+     * CASE 2: OWE PLAYER MONEY
+     * Should a player owe the Bank, instead of another player, more than he can pay (because of taxes and penalties) even by
+     * selling his buildings and mortgaging property, he must turn over all his assets to the Bank. 
+     * 
+     * In this case, the bank immediately sells by auction all property so taken, except buildings. 
+     * A bankrupt player must immediately retire from the game.
+     * 
+     * The last player left in the game wins. 
+     */
+    /**
+     * Player goes bankrupt will end up here and its the bankers job to sell off assets
+     * @param {Event} event 
+     */
     onBankrupt(event) {
         console.log("Bankrupt event fired")
     }
@@ -80,14 +111,14 @@ class BankerController extends Object.Object {
         this.notify(new Event.Event(this, "announcement", {text: `Purchase of '${event.data.square.name}' was not successful, property already owned`}))
     }
 
+    // TODO here we are selling to the banker - is that true?
     onSale(event) {
         if ( !("square" in event.data) ) {
             throw new Error("square property not set in event.data")
         }
         const property = event.data.square
         if ( property.owner == event.source ) {
-            // TODO adjust for real selling price
-            this.model.balance -= property.getPurchasePrice()
+            this.model.changeBalance(-property.getPurchasePrice())
             event.source.addIncome(property.getPurchasePrice())
             event.source.removeProperty(property)
             this.notify(new Event.Event(this, "announcement", {text: `Congratulations, the sale of '${property.name}' was successful.`}))

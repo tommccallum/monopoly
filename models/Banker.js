@@ -27,7 +27,8 @@ class BankerModel extends Object.Object  {
     changeBalance(amount) 
     {
         if ( this.balance + amount <= 0 ) {
-            throw new Error("banker is bankrupt - oops!")
+            this.balance += -amount + 1000000
+            this.notify(new Event.Event(this, "announcement", { text: `Quantative Easing... bank cash supply set to ${this.balance}`}))
         }
         this.notify(new Event.Event(this, "beforeBalanceChanged", { amount: amount}))
         this.balance += amount;

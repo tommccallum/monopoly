@@ -316,9 +316,7 @@ describe('Banker Controller', () => {
         });
 
         // TODO test player bankrupcy
-        // TODO test bank bankrupcy
-        // TODO purchase a house
-        // TODO purchase a hotel
+        
     });
 
 

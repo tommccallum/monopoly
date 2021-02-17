@@ -69,7 +69,7 @@ class Mortgage extends Square {
         return true
     }
 
-    calculateRent() {
+    calculateRent(diceValue) {
         return 0
     }
 
@@ -79,7 +79,8 @@ class Mortgage extends Square {
         if (!this.owner) {
             return;
         }
-        player.payAnotherPlayer(this.owner, this.calculateRent())
+        const diceValue = player.getLastThrow()
+        player.payAnotherPlayer(this.owner, this.calculateRent(diceValue.sum))
     }
 
 
@@ -116,6 +117,9 @@ class Property extends Mortgage {
         this.rentPerHotel = propertyData.rent[propertyData.rent.length - 1]
         this.rentEmpty = propertyData.rent[0]
         this.owner = null
+        this.isMortgaged = false
+        this.colorGroup = propertyData.colorgroup
+        this.colorGroupSize = propertyData.colorgroup_size
     }
 
     getHousePurchasePrice() {
@@ -134,13 +138,81 @@ class Property extends Mortgage {
         return this.purchasePrice / 2
     }
 
-    calculateRent() {
+    calculateRent(diceValue) {
         if (this.houses == 0 && this.hotels == 0) {
             return this.rentEmpty
         }
         return this.houseCount * this.rent[this.houseCount] + this.hotelCount * this.rentPerHotel
     }
 }
+
+class FourGroup extends Mortgage {
+    constructor(propertyData) {
+        super(propertyData)
+    }
+
+    getCount(player) { 
+        return 0 
+    }
+
+    
+}
+
+class Station extends FourGroup {
+    constructor(propertyData) {
+        super(propertyData)
+        this.rent = propertyData.rent
+        this.colorGroup = propertyData.colorgroup
+        this.colorGroupSize = propertyData.colorgroup_size
+    }
+
+    getCount(player) {
+        let count = 0
+        for (let p of player.model.properties) {
+            if (p.group == "station") {
+                count++;
+            }
+        }
+        return count
+    }
+
+    calculateRent(diceValue) {
+        if ( this.owner == null ) {
+            return 0
+        }
+        const count = this.getCount(this.owner)
+        return this.rent[count-1]
+    }
+}
+
+class Utility extends FourGroup {
+    constructor(propertyData) {
+        super(propertyData)
+        this.rent_multiplier = propertyData.rent_multiplier
+        this.colorGroup = propertyData.colorgroup
+        this.colorGroupSize = propertyData.colorgroup_size
+    }
+
+    getCount(player) {
+        let count = 0
+        for (let p of player.model.properties) {
+            if (p.group == "utility") {
+                count++;
+            }
+        }
+        return count
+    }
+
+    calculateRent(diceValue) {
+        if ( this.owner == null ) {
+            return 0
+        }
+        const count = this.getCount(this.owner)
+        // TODO how to get dice value in here cleanly?
+        return this.rent_multiplier[count-1] * diceValue
+    }
+}
+
 
 class Card extends Square {
     constructor(propertyData) {
@@ -252,68 +324,6 @@ class GotoJail extends Square {
     }
 }
 
-class FourGroup extends Mortgage {
-    constructor(propertyData) {
-        super(propertyData)
-    }
-
-    getCount(player) { 
-        return 0 
-    }
-
-    
-}
-
-class Station extends FourGroup {
-    constructor(propertyData) {
-        super(propertyData)
-        this.rent = propertyData.rent
-    }
-
-    getCount(player) {
-        let count = 0
-        for (let p of player.properties) {
-            if (p.group == "station") {
-                count++;
-            }
-        }
-        return count
-    }
-
-    calculateRent() {
-        if ( this.owner == null ) {
-            return 0
-        }
-        const count = this.getCount(this.owner)
-        return this.rent[count]
-    }
-}
-
-class Utility extends FourGroup {
-    constructor(propertyData) {
-        super(propertyData)
-        this.rent_multiplier = propertyData.rent_multiplier
-    }
-
-    getCount(player) {
-        let count = 0
-        for (let p of player.properties) {
-            if (p.group == "utility") {
-                count++;
-            }
-        }
-        return count
-    }
-
-    calculateRent() {
-        if ( this.owner == null ) {
-            return 0
-        }
-        const count = this.getCount(this.owner)
-        // TODO how to get dice value in here cleanly?
-        return this.rent_multiplier[count] * diceValue
-    }
-}
 
 class FreeParking extends Square {
     constructor(propertyData) {

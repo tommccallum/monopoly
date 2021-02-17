@@ -11,6 +11,11 @@ class PlayerController extends Object {
         this.board = board
         this.dice = dice
         this.availableMoves = new ActionCollection(this.model.isHuman)
+        this.lastThrow = null
+    }
+
+    getLastThrow() {
+        return this.lastThrow
     }
 
     getIndex() {
@@ -69,18 +74,21 @@ class PlayerController extends Object {
                 // we have the option to sell or mortgage any property and to pass of course
                 this.availableMoves.add("M", "Mortgage property", new Commands.Mortgage(this))
                 this.availableMoves.add("S", "Sell property", new Commands.Sell(this))
-                this.availableMoves.add("H", "Buy a house", new Commands.BuyHouse(this))
 
-                // we can only buy a hotel if ANY of our properties have 4 houses
-                let canBuyAHotel = false
-                for( let p of this.model.properties ) {
-                    if ( p.getHouseCount() > 3 ) { // TODO remove this magic number and get from game data
-                        canBuyAHotel = true
-                        break
+                if ( this.model.hasCompleteUnmortgagedColorGroup() ) {
+                    this.availableMoves.add("H", "Buy a house", new Commands.BuyHouse(this))
+
+                    // we can only buy a hotel if ANY of our properties have 4 houses
+                    let canBuyAHotel = false
+                    for( let p of this.model.properties ) {
+                        if ( p.getHouseCount() > 3 ) { // TODO remove this magic number and get from game data
+                            canBuyAHotel = true
+                            break
+                        }
                     }
-                }
-                if ( canBuyAHotel ) {
-                    this.availableMoves.add("O", "Buy a hotel", new Commands.BuyHotel(this))
+                    if ( canBuyAHotel ) {
+                        this.availableMoves.add("O", "Buy a hotel", new Commands.BuyHotel(this))
+                    }
                 }
                 this.availableMoves.add("P", "Pass", new Commands.Pass(this))
             }
@@ -187,7 +195,7 @@ class PlayerController extends Object {
         }
         this.withdraw(amount)
         other.addIncome(amount)
-        this.notify(new Event(this, "announcement", { text: `I had to pay ${amount} to ${other.token.name}! Only got ${this.model.balance} left to spend.` }))
+        this.notify(new Event(this, "announcement", { text: `I had to pay ${amount} to ${other.model.token.name}! Only got ${this.model.balance} left to spend.` }))
     }
 
     performDoNothingThisGo() {
@@ -200,6 +208,7 @@ class PlayerController extends Object {
     performRollOfDiceAction() {
         this.availableMoves.remove("R") 
         const rolled = this.dice.rollDice()
+        this.lastThrow = rolled
         this.notify(new Event(this, "announcement", { text:`Player rolled a [${rolled.values.join(',')}] for a total of ${rolled.sum}`}))
         this.move(rolled.sum)
         const isDouble = rolled.values[0] == rolled.values[1]

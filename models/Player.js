@@ -20,6 +20,71 @@ class Player extends Object {
     this.isOnDouble = false
   }
 
+  hasCompleteUnmortgagedColorGroup() {
+    const sorted = this.sortPropertiesByColorGroup()
+    for( let s of sorted ) {
+      if ( s.length > 0 ) {
+        const expectedSize = s[0].colorGroupSize
+        if ( s.length == expectedSize ) {
+          mortgaged = false
+          for( let p of s ) {
+            if ( p.isMortgaged ) {
+              mortgaged = true
+            }
+          }
+          if (!mortgaged) {
+            return true
+          }
+        }
+      }
+    }
+    return false
+  }
+
+  hasCompleteColorGroupIgnoreMortgageStatus() {
+    const sorted = this.sortPropertiesByColorGroup()
+    for( let s of sorted ) {
+      if ( s.length > 0 ) {
+        const expectedSize = s[0].colorGroupSize
+        if ( s.length == expectedSize ) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  sortPropertiesByColorGroup() {
+    const sorted = {}
+    for( let p of this.properties) {
+        if ( "colorGroup" in p ) {
+            if ( p.colorGroup in sorted ) {
+                sorted[p.colorGroup].push(p)
+            } else {
+                sorted[p.colorGroup] = [p]
+            }
+        }
+    }
+    return sorted
+  }
+
+  /**
+   * This is called by PlayerController when we need to unmortgage a property
+   * @param {Property} property 
+   */
+  unmortgageProperty(property) {
+    const index = this.properties.indexOf(property)
+    if ( index < 0 ) {
+      throw new Error("property not found")
+    }
+    if ( !property.isMortgaged ) {
+      throw new Error("property is not mortgaged")
+    }
+    // TODO move this 10% above mortgage value to gamedata
+    const mortgageRate = 0.1
+    this.withdraw(property.getMortgageValue() * ( 1 + mortgageRate ))
+  }
+
   addIncome(amount) {
     if (amount < 0) {
       throw new Error("amount must be greater than or equal to zero")
@@ -33,10 +98,15 @@ class Player extends Object {
       throw new Error("amount must be greater than or equal to zero")
     }
     if (this.balance < amount) {
-      this.notify(new Event(this, "bankrupt"))
+      // can we sell any houses or hotels to the bank?
+      // if we have property, then can can sell it to the bank for cash?
+      // if we have mortgaged property, then we can give that to the other player?
+      // fire false back meaning that we are bankrupt and need to sell assets
+      return false 
     }
     this.balance -= amount
     this.notify(new Event(this, "announcement", { text: `${this.token.name} has current balance of ${this.balance}.`}))
+    return true
   }
 
   isInJail() {

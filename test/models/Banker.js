@@ -92,24 +92,16 @@ describe('Banker model', () => {
             assert.strictEqual(newBalance - original, amount)
         });
 
-        it('should throw an error if amount > balance', () => {
+        it('should do quantitative easing', () => {
             const banker = new BankerModel.Model()
             const observer = new Observer.EventObserver()
             banker.addListener(observer)
-            observer.add((event) => {
-                assert.fail("there should be no events in case of bankrupcy")
-            })
             const original = banker.balance
             const amount = -original
-            try {
-                banker.changeBalance(amount)
-                assert.fail("banker should have thrown an error")
-            } catch( error ) {
-                assert.ok(true, "error caught")
-            }
+            banker.changeBalance(amount)
             // there should be no change in the balance
             const newBalance = banker.balance
-            assert.strictEqual(newBalance - original, 0)
+            assert.strictEqual(newBalance - original, 1000000)
         });
     })
 });
