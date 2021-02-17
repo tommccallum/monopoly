@@ -19,6 +19,7 @@ class Monopoly extends Object {
     this.lastMovesGenerated = null
 
     this.banker = banker
+    this.banker.mortgageInterestRate = this.gameData.mortgageInterestRate   // TODO clean this up
     this.board = new Board(this.gameData, this.banker)
     this.diceCollection = new DiceCollection([new Dice(), new Dice()])
   }
@@ -47,7 +48,8 @@ class Monopoly extends Object {
       } else {
         player = new Bot(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount)
       }
-      player.mortgageGame = this.gameData.mortgageInterestRate
+      // TODO clean this up
+      player.mortgageInterestRate = this.gameData.mortgageInterestRate
       const playerController = new PlayerController(player, this.board, this.diceCollection)
       this.players.push(playerController)
       // TODO clean this ?: up into some sort of call to player instead

@@ -14,6 +14,7 @@ class BankerController extends Object.Object {
     constructor(banker) {
         super()
         this.model = banker
+        this.mortgageInterestRate = 0.1
     }
 
     addTitleDeed(property)
