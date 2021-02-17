@@ -70,10 +70,22 @@ class Mortgage extends Command
     }
 }
 
+class PropertyList extends Command
+{
+    constructor(...args) {
+        super(...args)
+    }
+
+    execute() {
+        this.receiver.performListProperties()
+    }
+}
+
 module.exports = {
     Roll: Roll,
     Buy: Buy,
     Sell: Sell,
     Pass: Pass,
-    Mortgage: Mortgage
+    Mortgage: Mortgage,
+    PropertyList: PropertyList
 }

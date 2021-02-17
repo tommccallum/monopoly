@@ -33,10 +33,12 @@ class PlayerController extends Object {
         this.notify(new Event(this, "announcement", { text: `\n\n${this.model.token.name} (player ${this.model.index}) is now the current player` }))
         this.model.sendStatus()
         this.availableMoves = new ActionCollection(this.model.isHuman)
+        this.availableMoves.add("L", "List Properties", new Commands.PropertyList(this))
         this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
     }
 
     generateMoves() {
+        this.availableMoves.add("L", "List Properties", new Commands.PropertyList(this))
         if (this.model.isInJail()) {
             // player gets to use a get out of jail free card
             if (this.model.hasCard("GetOutOfJailFreeCard")) {
@@ -63,8 +65,18 @@ class PlayerController extends Object {
     }
 
     getAvailableMoves() {
-        if ( this.availableMoves.size() == 1 && this.availableMoves.exists("P")) {
+        if ( this.availableMoves.size() == 2 && this.availableMoves.exists("P")
+            && this.availableMoves.exists("L") ) {
             this.availableMoves.remove("P")
+            this.availableMoves.remove("L")
+        }
+        if ( this.availableMoves.size() == 1 && this.availableMoves.exists("L")
+            || this.availableMoves.exists("P") ) {
+            this.availableMoves.remove("P")
+            this.availableMoves.remove("L")
+        }
+        if ( this.model.isHuman == false ) {
+            this.availableMoves.remove("L")
         }
         return this.availableMoves;
     }
@@ -179,6 +191,17 @@ class PlayerController extends Object {
         this.availableMoves.remove("S")
         const square = this.board.getSquareAtIndex(this.model.location)
         this.notify(new Event(this, "sale", { text: `${this.model.token.name} attempts to sell the property`, player: this, square: square }))        
+    }
+
+    performListProperties() {
+        if ( this.model.properties.length == 0 ) {
+            this.notify(new Event(this, "announcement", { text: "No properties are owned yet!" }))
+        } else {
+            const propertyList = this.model.properties.map((property) => {
+                return property.name
+            }).join("\n")
+            this.notify(new Event(this, "announcement", { text: propertyList }))
+        }
     }
 
     addChance(card) {
