@@ -49,7 +49,8 @@ class Monopoly extends Object {
       }
       const playerController = new PlayerController(player, this.board, this.diceCollection)
       this.players.push(playerController)
-      this.notify(new Event(this, "announcement", { text: `Creating human ${player.index} with token ${player.token.name} and balance ${player.balance}`}))
+      // TODO clean this ?: up into some sort of call to player instead
+      this.notify(new Event(this, "announcement", { text: `Creating ${player.isHuman ? "human" : "bot"} ${player.index} with token ${player.token.name} and balance ${player.balance}`}))
     }
   }
 
@@ -93,6 +94,7 @@ class Monopoly extends Object {
     {
       if ( !this.lastMovesGenerated.isEmpty() ) {
         try {
+          this.notify(new Event(this, "announcement", { text: `Selected '${userInput.toUpperCase()}'` }))
           this.lastMovesGenerated.findAndExecute(userInput)
         } catch( error ) {
           this.notify(new Event(this, "announcement", { text:error.message}))

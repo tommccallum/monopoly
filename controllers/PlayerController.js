@@ -7,6 +7,7 @@ class PlayerController extends Object {
     constructor(playerModel, board, dice) {
         super()
         this.model = playerModel
+        playerModel.addListener(this)
         this.board = board
         this.dice = dice
         this.availableMoves = null
@@ -21,7 +22,6 @@ class PlayerController extends Object {
     }
 
     withdraw(amount) {
-        console.log("here")
         this.model.withdraw(amount)
     }
 
@@ -32,38 +32,40 @@ class PlayerController extends Object {
     startTurn() {
         this.notify(new Event(this, "announcement", { text: `\n\n${this.model.token.name} (player ${this.model.index}) is now the current player` }))
         this.model.sendStatus()
-        this.availableMoves = new ActionCollection(this)
+        this.availableMoves = new ActionCollection(this.model.isHuman)
         this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
     }
 
     generateMoves() {
-        const moves = new ActionCollection(this)
-
         if (this.model.isInJail()) {
             // player gets to use a get out of jail free card
             if (this.model.hasCard("GetOutOfJailFreeCard")) {
-                moves.add("J", "Use get out of jail free card")
+                this.availableMoves.add("J", "Use get out of jail free card")
             }
             // player gets to pay $50
-            moves.add("P", "Pay $50 to leave jail")
+            this.availableMoves.add("P", "Pay $50 to leave jail")
             // player can roll and get a double
-            moves.add("R", "Attempt to roll a double", new Commands.Roll(this))
+            this.availableMoves.add("R", "Attempt to roll a double", new Commands.Roll(this))
             // if you do not throw a double after 3 turns you have to pay $50 to the banker
             // if using the get out of jail free card then they can have their go as usual
         } else {
             const square = this.board.getSquareAtIndex(this.model.location)
             const options = square.getOptions(this)
-            moves.addAll(options)
+            this.availableMoves.addAll(options)
             if (this.model.properties.length > 0) {
-                // we have the option to sell or mortgage any property
-                moves.add("M", "Mortgage property", new Commands.Mortgage(this))
-                moves.add("S", "Sell property", new Commands.Sell(this))
+                // we have the option to sell or mortgage any property and to pass of course
+                this.availableMoves.add("M", "Mortgage property", new Commands.Mortgage(this))
+                this.availableMoves.add("S", "Sell property", new Commands.Sell(this))
+                this.availableMoves.add("P", "Pass", new Commands.Pass(this))
             }
         }
-        return moves
+        return this.availableMoves
     }
 
     getAvailableMoves() {
+        if ( this.availableMoves.size() == 1 && this.availableMoves.exists("P")) {
+            this.availableMoves.remove("P")
+        }
         return this.availableMoves;
     }
 
@@ -82,6 +84,8 @@ class PlayerController extends Object {
         if (this.model.location > index) {
             // pass go
             this.notify(new Event(this, "passGo", { text: "Player passed Go!" }))
+        } else {
+            this.notify(new Event(this, "announcement", { text: "Player did not pass Go!" }))
         }
         this.model.location = index
         this.visitSquare()
@@ -92,6 +96,8 @@ class PlayerController extends Object {
         if (this.model.location > index) {
             // pass go
             this.notify(new Event(this, "passGo", { text: "Player passed Go!" }))
+        } else {
+            this.notify(new Event(this, "announcement", { text: "Player did not pass Go!" }))
         }
         this.model.location = index
         this.visitSquare()
@@ -108,6 +114,7 @@ class PlayerController extends Object {
         const square = this.board.getSquareAtIndex(this.model.location)
         this.notify(new Event(this, "announcement", { text: `Player landed on ${square.name}!` }))
         square.visit(this)
+        this.generateMoves()
     }
 
     gotoJailWithoutPassingGo() {
@@ -132,16 +139,16 @@ class PlayerController extends Object {
     }
 
     performDoNothingThisGo() {
-        console.log("pass")
-        this.availableMoves = new ActionCollection(this)
+        this.availableMoves = new ActionCollection(this.model.isHuman)
         if (this.isOnDouble) {
             this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
         }
     }
 
     performRollOfDiceAction() {
+        this.availableMoves.remove("R") 
         const rolled = this.dice.rollDice()
-        console.log(`Player rolled a [${rolled.values.join(',')}] for a total of ${rolled.sum}`)
+        this.notify(new Event(this, "announcement", { text:`Player rolled a [${rolled.values.join(',')}] for a total of ${rolled.sum}`}))
         this.move(rolled.sum)
         const isDouble = rolled.values[0] == rolled.values[1]
         if (isDouble) {
@@ -149,37 +156,29 @@ class PlayerController extends Object {
         }
         if (this.doubleCounter > 2) {
             this.gotoJail()
+            this.isOnDouble = false
+            return
         }
         if (isDouble && this.doubleCounter < 3) {
             this.notify(new Event(this, "announcement", { text: `${this.model.token.name} rolled a double` }))
-            this.availableMoves = this.generateMoves()
             this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
             this.isOnDouble = true
         } else {
             this.doubleCounter = 0
-            this.availableMoves = this.generateMoves()
             this.isOnDouble = false
         }
     }
 
     performBuyProperty() {
-        console.log("buy")
+        this.availableMoves.remove("B")
         const square = this.board.getSquareAtIndex(this.model.location)
         this.notify(new Event(this, "purchase", { text: `${this.model.token.name} attempts to buy the property`, player: this, square: square }))
-        this.availableMoves = new ActionCollection(this)
-        if (this.isOnDouble) {
-            this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
-        }
     }
 
     performSellProperty() {
-        console.log("sell")
+        this.availableMoves.remove("S")
         const square = this.board.getSquareAtIndex(this.model.location)
-        this.notify(new Event(this, "sale", { text: `${this.model.token.name} attempts to sell the property`, player: this, square: square }))
-        this.availableMoves = new ActionCollection(this)
-        if (this.isOnDouble) {
-            this.availableMoves.add("R", "Roll dice", new Commands.Roll(this))
-        }
+        this.notify(new Event(this, "sale", { text: `${this.model.token.name} attempts to sell the property`, player: this, square: square }))        
     }
 
     addChance(card) {
@@ -216,6 +215,14 @@ class PlayerController extends Object {
 
     withdraw(amount) {
         this.model.withdraw(amount)
+    }
+
+    /**
+     * Forward all player events on to listeners
+     * @param {Event} event 
+     */
+    onAny(event) {
+        this.notify(event)
     }
 }
 

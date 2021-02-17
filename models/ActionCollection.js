@@ -2,15 +2,43 @@ const random = require("random")
 
 class ActionCollection
 {
-    constructor(player)
+    constructor(human)
     {
-        this.player = player
+        this.human = human
         this.moves= []
     }
 
     // this function 'forwards' the call to the player object
     isHuman() {
-        return this.player.isHuman
+        return this.human
+    }
+
+    exists( key ) {
+        for( let move of this.moves ) {
+            if ( move.key.toUpperCase() == key.toUpperCase() ) {
+                return true
+            }
+        }
+        return false
+    }
+
+    size() {
+        return this.moves.length
+    }
+
+    /**
+     * Removes a move and returns the removed move
+     * @param {string} key 
+     */
+    remove(key) {
+        // we need to remove Pass when we are rolling a dice again
+        for( let index in this.moves ) {
+            if ( this.moves[index].key.toUpperCase() == key.toUpperCase() ) {
+                const items = this.moves.splice(index, 1)
+                return items[0]
+            }
+        }
+        return null
     }
 
     /**
@@ -20,8 +48,10 @@ class ActionCollection
      * @param {Commmand} command 
      */
     add(key, text, command) {
-        const obj = { key: key, text: text, command:command }
-        this.moves.push(obj)
+        const obj = { key: key.toUpperCase(), text: text, command:command }
+        if ( !this.exists(key) ) {
+            this.moves.push(obj)
+        }
     }
 
     /**
@@ -31,6 +61,7 @@ class ActionCollection
     addAll(choices) 
     {
         for( let choice of choices ) {
+            choice.key = choice.key.toUpperCase()
             this.moves.push(choice)
         }
     }

@@ -25,7 +25,7 @@ class Player extends Object {
       throw new Error("amount must be greater than or equal to zero")
     }
     this.balance += amount
-    this.notify(new Event(this, "announcement", { text: `Hooray! I received ${amount}! I now have ${this.balance} to spend.` }))
+    this.notify(new Event(this, "announcement", { text: `Hooray! ${this.token.name} received ${amount}! I now have ${this.balance} to spend.` }))
   }
 
   withdraw(amount) {
@@ -36,7 +36,7 @@ class Player extends Object {
       this.notify(new Event(this, "bankrupt"))
     }
     this.balance -= amount
-    this.notify(new Event(this, "payBank", { amount: amount }))
+    this.notify(new Event(this, "announcement", { text: `${this.token.name} has current balance of ${this.balance}.`}))
   }
 
   isInJail() {

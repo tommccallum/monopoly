@@ -48,6 +48,25 @@ class PromptView
     }
 }
 
+class BotView 
+{
+    constructor(prompt) {
+        this.promptModel = prompt
+    }
+
+    render() 
+    {
+        let result = ""
+        for( let move of this.promptModel.moves) 
+        {
+            result += `Press ${move.key} to ${move.text}`
+            result += '\n'
+        }
+        return result
+    }
+}
+
+
 const Object = require("../../models/Object");
 class Logger extends Object.Object
 {
@@ -112,6 +131,8 @@ function replPrompt(rl)
         } else {
             // generate random move for automated player
             const key = move.getRandom()  
+            const promptView = new BotView(move)
+            console.log(promptView.render())
             rl.question("Hit any to continue...", res => {
                 infiniteReadLoop(key);
             });
