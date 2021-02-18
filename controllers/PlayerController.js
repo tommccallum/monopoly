@@ -4,7 +4,7 @@ const { ActionCollection } = require("../models/ActionCollection")
 const Commands = require("../models/Commands")
 
 class PlayerController extends Object {
-    constructor(playerModel, board, dice) {
+    constructor(playerModel, board, dice, requiredHousesBeforeBuyHotel) {
         super()
         this.model = playerModel
         playerModel.addListener(this)
@@ -12,6 +12,7 @@ class PlayerController extends Object {
         this.dice = dice
         this.availableMoves = new ActionCollection(this.model.isHuman)
         this.lastThrow = null
+        this.requiredHousesBeforeBuyHotel = requiredHousesBeforeBuyHotel
     }
 
     getLastThrow() {
@@ -91,7 +92,7 @@ class PlayerController extends Object {
                     // we can only buy a hotel if ANY of our properties have 4 houses
                     let canBuyAHotel = false
                     for( let p of this.model.properties ) {
-                        if ( p.getHouseCount() > 3 ) { // TODO remove this magic number and get from game data
+                        if ( p.getHouseCount() >= this.requiredHousesBeforeBuyHotel ) { 
                             canBuyAHotel = true
                             break
                         }
@@ -181,7 +182,6 @@ class PlayerController extends Object {
         this.visitSquare()
     }
 
-    // TODO merge tax and withdraw functions into single function
     payTax(amount) {
         this.model.withdraw(amount)
         this.notify(new Event(this, "payBank", { amount: amount }))
@@ -263,7 +263,6 @@ class PlayerController extends Object {
     }
 
     performSaleOfProperty(data) {
-        // TODO clear property list
         this.availableMoves.removeListIndices()
         this.notify(new Event(this, "sale", { text: `${this.model.token.name} attempts to sell the property`, square: data.property }))        
     }
@@ -301,7 +300,6 @@ class PlayerController extends Object {
     }
 
     performBuyHouseForProperty(data) {
-        // TODO clear property list
         this.availableMoves.removeListIndices()
         this.notify(new Event(this, "buyHouse", { text: `${this.model.token.name} attempts to buy a house for property '${data.property.name}'`, square: data.property }))        
     }
@@ -327,9 +325,7 @@ class PlayerController extends Object {
     }
 
     performBuyHotelForProperty(data) {
-        // TODO clear property list
         this.availableMoves.removeListIndices()
-        
         this.notify(new Event(this, "buyHotel", { text: `${this.model.token.name} attempts to buy a hotel for property '${data.property.name}'`, square: data.property }))        
     }
 

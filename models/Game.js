@@ -19,7 +19,8 @@ class Monopoly extends Object {
     this.lastMovesGenerated = null
 
     this.banker = banker
-    this.banker.mortgageInterestRate = this.gameData.mortgageInterestRate   // TODO clean this up
+    this.banker.mortgageInterestRate = this.gameData.mortgageInterestRate
+    this.banker.requiredHousesBeforeBuyHotel = this.gameData.requiredHousesBeforeBuyHotel
     this.board = new Board(this.gameData, this.banker)
     this.diceCollection = new DiceCollection([new Dice(), new Dice()])
   }
@@ -44,16 +45,13 @@ class Monopoly extends Object {
     for (let ii = 0; ii < this.playerCount; ii++) {
       let player = null;
       if (ii < this.realPlayerCount) {
-        player = new Human(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount)
+        player = new Human(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount, this.gameData.mortgageInterestRate)
       } else {
-        player = new Bot(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount)
+        player = new Bot(ii + 1, new Token(this.gameData.tokens[ii]), this.gameData.startingMoneyAmount, this.gameData.mortgageInterestRate)
       }
-      // TODO clean this up
-      player.mortgageInterestRate = this.gameData.mortgageInterestRate
-      const playerController = new PlayerController(player, this.board, this.diceCollection)
+      const playerController = new PlayerController(player, this.board, this.diceCollection, this.gameData.requiredHousesBeforeBuyHotel)
       this.players.push(playerController)
-      // TODO clean this ?: up into some sort of call to player instead
-      this.notify(new Event(this, "announcement", { text: `Creating ${player.isHuman ? "human" : "bot"} ${player.index} with token ${player.token.name} and balance ${player.balance}`}))
+      this.notify(new Event(this, "announcement", { text: `Creating ${player.intelligenceName} ${player.index} with token ${player.token.name} and balance ${player.balance}`}))
     }
   }
 

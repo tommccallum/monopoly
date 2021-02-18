@@ -15,6 +15,7 @@ class BankerController extends Object.Object {
         super()
         this.model = banker
         this.mortgageInterestRate = 0.1
+        this.requiredHousesBeforeBuyHotel = 4
     }
 
     addTitleDeed(property)
@@ -125,7 +126,7 @@ class BankerController extends Object.Object {
         this.notify(new Event.Event(this, "announcement", {text: `Purchase of '${event.data.square.name}' was not successful, property already owned`}))
     }
 
-    // TODO here we are selling to the banker - is that true?
+    // TODO here we are selling to the banker - is that true?  
     onSale(event) {
         if ( !("square" in event.data) ) {
             throw new Error("square property not set in event.data")
@@ -148,8 +149,7 @@ class BankerController extends Object.Object {
         const player = event.source
         const property = event.data.square
         if ( property.owner == player ) {
-            // TODO remove this magic number and get it from the gamedata
-            if ( property.houseCount >= 4 ) {
+            if ( property.houseCount >= this.requiredHousesBeforeBuyHotel ) {
                 this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was not successful, you already have 4 houses`}))
                 return
             }
@@ -175,10 +175,8 @@ class BankerController extends Object.Object {
         const player = event.source
         const property = event.data.square
         if ( property.owner == player ) {
-            // TODO remove this magic number and get it from the gamedata
-            if ( property.houseCount < 4 ) {
-                // TODO remote the magic 4 from this
-                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was not successful, it requires 4 houses for a hotel`}))
+            if ( property.houseCount < this.requiredHousesBeforeBuyHotel ) {
+                this.notify(new Event.Event(this, "announcement", {text: `Purchase of a house for '${event.data.square.name}' was not successful, it requires ${this.requiredHousesBeforeBuyHotel} houses for a hotel`}))
                 return
             }
             if ( player.getBalance() >= property.getHotelPurchasePrice() ) {

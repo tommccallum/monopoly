@@ -84,14 +84,6 @@ class Mortgage extends Square {
     }
 
 
-    // TODO this is not quite right
-    // as we can Sell and Mortgage a property
-    // at any time so as part of these
-    // commands we have to ask the player to select 
-    // an property from their portfolio.
-    // Also check if we can sell/mortgage at
-    // any time in the game.
-
     getOptions(player) {
         let choices = []
         if (this.owner == null && player.getBalance() >= this.purchasePrice) {
@@ -207,7 +199,6 @@ class Utility extends FourGroup {
             return 0
         }
         const count = this.getCount(this.owner)
-        // TODO how to get dice value in here cleanly?
         return this.rent_multiplier[count-1] * diceValue
     }
 }

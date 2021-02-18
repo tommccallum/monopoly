@@ -5,7 +5,7 @@ const { Object } = require("./Object")
 const { Event } = require("./Event")
 
 class Player extends Object {
-  constructor(index, token, balance) {
+  constructor(index, token, balance, mortgageInterestRate) {
     super()
     this.index = index  // index will start at 1
     this.balance = balance
@@ -18,7 +18,8 @@ class Player extends Object {
     this.doubleCounter = 0
     this.isHuman = true
     this.isOnDouble = false
-    this.mortgageInterestRate = 0.1
+    this.mortgageInterestRate = mortgageInterestRate
+    this.intelligenceName = "Unknown"
   }
 
   hasCompleteUnmortgagedColorGroup() {
@@ -109,7 +110,8 @@ class Player extends Object {
   }
 
   isInJail() {
-    // NOTE cannot just test location as you can be on the jail location without being in jail.
+    // We cannot just test location as you can be on the jail location without being in jail.
+    // There we have to explicitly say if we are in jail or not.
     return this.inJail;
   }
 
@@ -187,6 +189,8 @@ class Player extends Object {
 class Human extends Player {
   constructor(...args) {
     super(...args)
+
+    this.intelligenceName = "human"
   }
 }
 
@@ -194,6 +198,8 @@ class Bot extends Player {
   constructor(...args) {
     super(...args)
     this.isHuman = false
+
+    this.intelligenceName = "bot"
   }
 }
 
