@@ -1,4 +1,9 @@
+---------------------------------------------------------------
++ = FEATURE ! = BUG
+---------------------------------------------------------------
+
 + Convert the language csv files to JSON so that when we go to web platform they are built in.
 + Bot improvement: Do we want 50-50 chance between buy and pass, as we pass A LOT more than a human would
-+ Problem of double Go! when we have a chance to advance to Go and then it registers a landed on Go!
 + auction between players when user does not buy a property
+
+! Problem of double Go! when we have a chance to advance to Go and then it registers a landed on Go!
