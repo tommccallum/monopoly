@@ -8,10 +8,15 @@ class PlayerController extends Object {
         super()
         this.model = playerModel
         playerModel.addListener(this)
+
+        // this state is transient and would not be required to 
+        // load a player from a "save" game.
         this.board = board
         this.dice = dice
+        this.lastThrow = null       // could this be owned by dice?
         this.availableMoves = new ActionCollection(this.model.isHuman)
-        this.lastThrow = null
+
+        // this comes from game state
         this.requiredHousesBeforeBuyHotel = requiredHousesBeforeBuyHotel
     }
 

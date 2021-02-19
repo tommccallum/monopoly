@@ -7,19 +7,27 @@ const { Event } = require("./Event")
 class Player extends Object {
   constructor(index, token, balance, mortgageInterestRate) {
     super()
-    this.index = index  // index will start at 1
+
+    // state about type of player and making messages more clear
+    this.index = index        // index will start at 1
+    this.isHuman = true
+    this.intelligenceName = "Unknown"
+
+    // turn state
+    this.location = -1        // TODO do we need this in the player object?
+    this.doubleCounter = 0
+    this.isOnDouble = false
+
+    // state required by monopoly
     this.balance = balance
     this.properties = []
     this.token = token
-    this.location = -1 // we start off the board
     this.inJail = false
-    this.chanceCards = []
-    this.communityChestCards = []
-    this.doubleCounter = 0
-    this.isHuman = true
-    this.isOnDouble = false
+    this.chanceCards = []         // can these cards be merged?
+    this.communityChestCards = [] // can these cards be merged?
+    
+    // common state that we need for calculation but is actually game state
     this.mortgageInterestRate = mortgageInterestRate
-    this.intelligenceName = "Unknown"
   }
 
   hasCompleteUnmortgagedColorGroup() {
