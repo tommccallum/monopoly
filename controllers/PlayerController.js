@@ -215,6 +215,7 @@ class PlayerController extends Object {
         }
     }
 
+    // TODO think about if we can extract this logic from player and move it perhaps into a Dice result.
     performRollOfDiceAction() {
         this.availableMoves.remove("R") 
         const rolled = this.dice.rollDice()

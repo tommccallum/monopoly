@@ -10,6 +10,7 @@ module.exports = {
     squares: [
         { group: "go", name: "GO", purchase_value: 200 },
         { group: "property", colorgroup: "brown", colorgroup_size: 2, name: "Old Kent Road", purchase_value: 60, house_purchase_price:50, hotel_purchase_price:50, rent: [2,10,30,90,160,250] },
+        { group: "communitychest", name: "Community Chest" },
         { group: "property", colorgroup: "brown", colorgroup_size: 2, name: "Whitechapel Road", purchase_value: 60, house_purchase_price:50, hotel_purchase_price:50, rent: [4,20,60,180,320,450] },
         { group: "tax", name: "Income Tax", purchase_value: 200 },
         { group: "station", colorgroup: "station", colorgroup_size: 4, name: "King's Cross Station", puchase_value: 200, rent: [25,50,100,200] },
@@ -17,6 +18,7 @@ module.exports = {
         { group: "chance", name: "Chance" },
         { group: "property", colorgroup: "blue", colorgroup_size: 3, name: "Euston Road", purchase_value: 100, house_purchase_price:50, hotel_purchase_price:50, rent: [6,30,90,270,400,550] },
         { group: "property", colorgroup: "blue", colorgroup_size: 3, name: "Pentonville Road", purchase_value: 120, house_purchase_price:50, hotel_purchase_price:50, rent: [8,40,100,300,450,600] },
+
         { group: "jail", name: "Jail", purchase_value: 0 },
         { group: "property", colorgroup: "pink", colorgroup_size: 3, name: "Pall Mall", purchase_value: 140, house_purchase_price:100, hotel_purchase_price:100, rent: [10,50,150,450,625,750] },
         { group: "utility", colorgroup: "utility", colorgroup_size: 2, name: "Electric Company", purchase_value: 150, rent_multiplier: [4,10] },
@@ -27,6 +29,7 @@ module.exports = {
         { group: "communitychest", name: "Community Chest" },
         { group: "property", colorgroup: "orange", colorgroup_size: 3, name: "Marlborough Street", purchase_value: 180, house_purchase_price:100, hotel_purchase_price:100, rent: [14,70,200,550,750,950] },
         { group: "property", colorgroup: "orange", colorgroup_size: 3, name: "Vine Street", purchase_value: 200, house_purchase_price:100, hotel_purchase_price:100, rent: [16,80,220,600,800,1000] },
+        
         { group: "freeparking", name: "Free Parking" },
         { group: "property", colorgroup: "red", colorgroup_size: 3, name: "Strand", purchase_value: 220, house_purchase_price:150, hotel_purchase_price:150, rent: [18,90,250,700,875,1050] },
         { group: "chance", name: "Chance" },
@@ -37,6 +40,7 @@ module.exports = {
         { group: "property", colorgroup: "yellow", colorgroup_size: 3, name: "Coventry Street", purchase_value: 260, house_purchase_price:150, hotel_purchase_price:150, rent: [22,110,330,800,975,1150] },
         { group: "utility", colorgroup: "utility", colorgroup_size: 2, name: "Water Works", purchase_value: 150, rent_multiplier: [4,10] },
         { group: "property", colorgroup: "yellow", colorgroup_size: 3, name: "Picadilly", purchase_value: 280, house_purchase_price:150, hotel_purchase_price:150, rent: [22,120,360,850,1025,1200] },
+        
         { group: "gotojail", name: "Go to Jail" },
         { group: "property", colorgroup: "green", colorgroup_size: 3, name: "Regent Street", purchase_value: 300, house_purchase_price:200, hotel_purchase_price:200, rent: [26,130,390,900,1100,1275] },
         { group: "property", colorgroup: "green", colorgroup_size: 3, name: "Oxford Street", purchase_value: 300, house_purchase_price:200, hotel_purchase_price:200, rent: [26,130,390,900,1100,1275] },
